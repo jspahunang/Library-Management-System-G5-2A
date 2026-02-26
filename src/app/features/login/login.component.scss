@@ -1,0 +1,16 @@
+:host {
+  display: block;
+}
+
+.login-page {
+  background-color: #f1f5f9; /* fallback if image not found */
+  background-image: url('../../../assets/images/bc4.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.forgot-link-wrap {
+  margin-top: 1rem;
+  text-align: center;
+}

@@ -1,0 +1,60 @@
+<div class="page-section">
+  <h2 class="page-title">Dashboard</h2>
+
+  <div class="grid-cards">
+    <div class="stat-card">
+      <p class="stat-label">Total borrowed (active)</p>
+      <p class="stat-value">{{ borrowedCount() }}</p>
+      <a [routerLink]="['/librarian', 'transactions']" class="btn btn-primary stat-card-action">View transactions</a>
+    </div>
+    <div class="stat-card">
+      <p class="stat-label">Overdue books</p>
+      <p class="stat-value stat-value-warning">{{ overdueCount() }}</p>
+      <a [routerLink]="['/librarian', 'transactions']" class="btn btn-primary stat-card-action">View transactions</a>
+    </div>
+    <div class="stat-card">
+      <p class="stat-label">Total fines (unpaid)</p>
+      <p class="stat-value">₱{{ totalFinesUnpaid() }}</p>
+      <a [routerLink]="['/librarian', 'fines']" class="btn btn-primary stat-card-action">Manage fines</a>
+    </div>
+    <div class="stat-card">
+      <p class="stat-label">Total books (catalog)</p>
+      <p class="stat-value">{{ totalBooks() }}</p>
+      <a [routerLink]="['/librarian', 'books']" class="btn btn-primary stat-card-action">Manage books</a>
+    </div>
+  </div>
+
+  <div class="card-lg">
+    <div class="card-header">
+      <h3 class="card-title">Overdue borrows</h3>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Book</th>
+            <th>Student ID</th>
+            <th>Due date</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (r of overdueRecords(); track r.borrowid) {
+            <tr>
+              <td class="text-primary">{{ r.booktitle }}</td>
+              <td>{{ r.studentid }}</td>
+              <td>{{ r.duedate }}</td>
+              <td>
+                <app-status-badge [status]="r.status" type="borrow" />
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="4" class="empty-cell">No overdue borrows.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

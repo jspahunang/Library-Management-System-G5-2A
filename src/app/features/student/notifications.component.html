@@ -1,0 +1,50 @@
+<div class="page-section notifications-page">
+  <header class="notifications-header">
+    <div class="notifications-header-top">
+      <h2 class="page-title">Notifications</h2>
+      @if (unreadCount() > 0) {
+        <span class="unread-badge">{{ unreadCount() }} unread</span>
+      }
+    </div>
+    @if (unreadCount() > 0) {
+      <button type="button" (click)="markAllRead()" class="btn-mark-all">
+        Mark all as read
+      </button>
+    }
+  </header>
+
+  <div class="notif-list">
+    @for (n of notifications(); track n.notificationid) {
+      <article
+        class="notif-item"
+        [class.notif-item-unread]="!n.read"
+      >
+        <div class="notif-item-indicator" aria-hidden="true"></div>
+        <div class="notif-item-content">
+          <div class="notif-item-head">
+            <h3 class="notif-item-title">{{ n.messageTitle }}</h3>
+            @if (!n.read) {
+              <button
+                type="button"
+                (click)="markAsRead(n.notificationid)"
+                class="btn-mark-read"
+              >
+                Mark read
+              </button>
+            }
+          </div>
+          <p class="notif-item-body">{{ n.message }}</p>
+          <time class="notif-item-time" [attr.datetime]="n.timestamp">
+            {{ n.timestamp | date:'medium' }}
+          </time>
+        </div>
+      </article>
+    } @empty {
+      <div class="empty-state">
+        <div class="empty-state-icon" aria-hidden="true">🔔</div>
+        <p class="empty-state-title">No notifications yet</p>
+        <p class="empty-state-text">When you borrow books or get updates, they’ll show up here.</p>
+      </div>
+    }
+  </div>
+</div>

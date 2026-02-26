@@ -1,0 +1,142 @@
+<div class="user-mgmt page-section">
+  <header class="user-mgmt__header">
+    <h2 class="page-title">User Management</h2>
+  </header>
+
+  <div class="user-mgmt__toolbar-bar">
+    <div class="user-mgmt__filters">
+      <div class="user-mgmt__search-wrap">
+        <span class="user-mgmt__search-icon" aria-hidden="true">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+      </span>
+        <input
+          type="search"
+          placeholder="Search by name or email..."
+          class="user-mgmt__search"
+          [value]="searchQuery()"
+          (input)="searchQuery.set($any($event.target).value)"
+        />
+      </div>
+      <div class="user-mgmt__role-wrap">
+        <label class="user-mgmt__role-label" for="role-filter">Role</label>
+        <select
+          id="role-filter"
+          class="user-mgmt__role-select"
+          [value]="roleFilter()"
+          (change)="roleFilter.set($any($event.target).value)"
+        >
+          <option value="">All</option>
+          <option value="Admin">Admin</option>
+          <option value="Librarian">Librarian</option>
+          <option value="Student">Student</option>
+          <option value="Teacher">Teacher</option>
+        </select>
+      </div>
+    </div>
+    <div class="user-mgmt__action">
+      <button type="button" (click)="openAdd()" class="user-mgmt__add-btn">
+        <span class="user-mgmt__add-icon">+</span>
+        Add user
+      </button>
+    </div>
+  </div>
+
+  @if (showForm()) {
+    <div class="user-mgmt__modal-backdrop" (click)="cancelForm()" role="presentation"></div>
+    <div class="user-mgmt__modal" role="dialog" aria-modal="true" aria-labelledby="user-modal-title">
+      <div class="user-mgmt__modal-dialog" (click)="$event.stopPropagation()">
+        <header class="user-mgmt__modal-header">
+          <h3 id="user-modal-title" class="user-mgmt__modal-title">{{ editingId() ? 'Edit user' : 'Add new user' }}</h3>
+          <button type="button" class="user-mgmt__modal-close" (click)="cancelForm()" aria-label="Close">×</button>
+        </header>
+        <form [formGroup]="form" (ngSubmit)="save()" class="user-mgmt__modal-form">
+          <div class="user-mgmt__modal-body form-grid">
+            <div class="form-group">
+              <label class="form-label">First name</label>
+              <input formControlName="Fname" class="input input-sm" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Middle initial</label>
+              <input formControlName="Minitial" class="input input-sm" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Last name</label>
+              <input formControlName="Lname" class="input input-sm" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input formControlName="email" class="input input-sm" type="email" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Phone</label>
+              <input formControlName="phone" class="input input-sm" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Status</label>
+              <select formControlName="status" class="input input-sm">
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Role</label>
+              <select formControlName="role" class="input input-sm">
+                <option value="Admin">Admin</option>
+                <option value="Librarian">Librarian</option>
+                <option value="Student">Student</option>
+                <option value="Teacher">Teacher</option>
+              </select>
+            </div>
+          </div>
+          <footer class="user-mgmt__modal-footer">
+            <button type="button" (click)="cancelForm()" class="btn btn-secondary">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save</button>
+          </footer>
+        </form>
+      </div>
+    </div>
+  }
+
+  <section class="user-mgmt__table-section card-lg">
+    <div class="user-mgmt__table-meta">
+      <span class="user-mgmt__count">{{ filteredUsers().length }} user{{ filteredUsers().length === 1 ? '' : 's' }}</span>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (u of filteredUsers(); track u.userid) {
+            <tr>
+              <td class="text-primary">{{ u.Fname }} {{ u.Minitial }} {{ u.Lname }}</td>
+              <td>{{ u.email }}</td>
+              <td>{{ u.phone || '—' }}</td>
+              <td>{{ u.role }}</td>
+              <td>{{ u.status }}</td>
+              <td>
+                <div class="cell-actions">
+                  <button type="button" (click)="openEdit(u)" class="link-action">Edit</button>
+                  <button type="button" (click)="delete(u.userid)" class="link-action link-action-danger">Delete</button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" class="empty-cell">No users.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>

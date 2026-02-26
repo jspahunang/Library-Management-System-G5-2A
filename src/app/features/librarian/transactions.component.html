@@ -1,0 +1,136 @@
+<div class="page-section borrow-return-page">
+  <header class="page-header-block">
+    <div>
+      <h2 class="page-title">Borrow & Return</h2>
+      <p class="page-subtitle">Process new borrows and mark books as returned.</p>
+    </div>
+  </header>
+
+  <div class="mode-tabs">
+    <button
+      type="button"
+      (click)="mode.set('borrow')"
+      class="mode-tab"
+      [class.active]="mode() === 'borrow'"
+    >
+      <span class="mode-tab-icon" aria-hidden="true">📖</span>
+      Borrow
+    </button>
+    <button
+      type="button"
+      (click)="mode.set('return')"
+      class="mode-tab"
+      [class.active]="mode() === 'return'"
+    >
+      <span class="mode-tab-icon" aria-hidden="true">↩</span>
+      Return
+    </button>
+  </div>
+
+  @if (message()) {
+    <div
+      class="alert borrow-return-alert"
+      [class.alert-error]="!message().includes('success')"
+      [class.alert-success]="message().includes('success')"
+    >
+      {{ message() }}
+    </div>
+  }
+
+  <div class="content-grid" [class.return-only]="mode() === 'return'">
+    @if (mode() === 'borrow') {
+      <div class="card borrow-form-card">
+        <h3 class="card-title borrow-form-title">New borrow</h3>
+        <p class="card-desc">Select a student and a book to create a new borrow record.</p>
+        <div class="borrow-form-fields">
+          <div class="form-group">
+            <label class="form-label">Student</label>
+            <select
+              class="input"
+              [value]="selectedStudentId()"
+              (change)="selectedStudentId.set($any($event.target).value)"
+            >
+              <option value="">Select student</option>
+              @for (s of students(); track s.studentid) {
+                <option [value]="s.studentid">Student {{ s.studentid }} (Year {{ s.yearLevel }})</option>
+              }
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Book</label>
+            <select
+              class="input"
+              [value]="selectedBookId()"
+              (change)="selectedBookId.set($any($event.target).value)"
+            >
+              <option value="">Select book</option>
+              @for (b of books(); track b.bookid) {
+                <option [value]="b.bookid">{{ b.booktitle }} ({{ b.availableCopies }} left)</option>
+              }
+            </select>
+          </div>
+          <button type="button" (click)="doBorrow()" class="btn btn-primary borrow-submit">Borrow book</button>
+        </div>
+      </div>
+    }
+
+    <div class="card-lg active-borrows-card" [class.return-view]="mode() === 'return'">
+      <div class="card-header active-borrows-header">
+        <div>
+          @if (mode() === 'return') {
+            <h3 class="card-title">Books to return</h3>
+            <p class="card-header-meta">{{ activeBorrows().length }} book(s) waiting — click Return on a row to mark as returned</p>
+          } @else {
+            <h3 class="card-title">Active borrows</h3>
+            <p class="card-header-meta">{{ activeBorrows().length }} record(s) — return here</p>
+          }
+        </div>
+      </div>
+      <div class="table-wrap table-area">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Book</th>
+              <th>Student ID</th>
+              <th>Borrow date</th>
+              <th>Due date</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (r of activeBorrows(); track r.borrowid) {
+              <tr>
+                <td class="text-primary cell-book">{{ r.booktitle }}</td>
+                <td>{{ r.studentid }}</td>
+                <td>{{ r.borrowdate }}</td>
+                <td>{{ r.duedate }}</td>
+                <td>
+                  <app-status-badge [status]="r.status" type="borrow" />
+                </td>
+                <td>
+                  <button type="button" (click)="doReturn(r.borrowid)" class="btn-return">Return</button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="6" class="empty-cell">
+                  <div class="empty-state">
+                    <span class="empty-icon" aria-hidden="true">📚</span>
+                    @if (mode() === 'return') {
+                      <p class="empty-msg">No books to return.</p>
+                      <p class="empty-hint">Active borrows will show here so you can mark them returned.</p>
+                    } @else {
+                      <p class="empty-msg">No active borrows.</p>
+                      <p class="empty-hint">Borrows will appear here until they are returned.</p>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

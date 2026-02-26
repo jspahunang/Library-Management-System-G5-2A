@@ -1,0 +1,58 @@
+<div class="page-section borrowed-page">
+  <header class="page-header-block">
+    <div>
+      <h2 class="page-title">My Borrowed Books</h2>
+      <p class="page-subtitle">View your borrow history and current loans.</p>
+    </div>
+    @if (records().length > 0) {
+      <div class="borrowed-summary">
+        <span class="summary-item">{{ records().length }} total</span>
+        <span class="summary-dot" aria-hidden="true">·</span>
+        <span class="summary-item">{{ activeCount() }} active</span>
+      </div>
+    }
+  </header>
+
+  <div class="card-lg borrowed-card">
+    <div class="card-header borrowed-header">
+      <h3 class="card-title">Borrow history</h3>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table borrowed-table">
+        <thead>
+          <tr>
+            <th>Book</th>
+            <th>Borrow date</th>
+            <th>Due date</th>
+            <th>Return date</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (r of records(); track r.borrowid) {
+            <tr>
+              <td class="text-primary cell-book">{{ r.booktitle }}</td>
+              <td>{{ r.borrowdate }}</td>
+              <td>{{ r.duedate }}</td>
+              <td>{{ r.returndate ?? '—' }}</td>
+              <td>
+                <app-status-badge [status]="r.status" type="borrow" />
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5" class="empty-cell">
+                <div class="empty-state">
+                  <span class="empty-icon" aria-hidden="true">📖</span>
+                  <p class="empty-msg">No borrow records yet.</p>
+                  <p class="empty-hint">Borrowed books will appear here. Visit the catalog to borrow.</p>
+                  <a routerLink="catalog" class="btn btn-primary empty-cta">Go to catalog</a>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

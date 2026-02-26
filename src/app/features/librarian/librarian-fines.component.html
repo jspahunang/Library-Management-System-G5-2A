@@ -1,0 +1,60 @@
+<div class="page-section">
+  <h2 class="page-title">Fines</h2>
+
+  <div class="flex gap-2">
+    <input
+      type="text"
+      placeholder="Filter by student ID..."
+      class="input input-sm"
+      [value]="searchStudentId()"
+      (input)="searchStudentId.set($any($event.target).value)"
+    />
+  </div>
+
+  @if (message()) {
+    <div class="alert alert-success">{{ message() }}</div>
+  }
+
+  <div class="card-lg">
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Fine ID</th>
+            <th>Student ID</th>
+            <th>Borrow ID</th>
+            <th>Amount</th>
+            <th>Days overdue</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (f of filteredFines(); track f.fineid) {
+            <tr>
+              <td class="text-primary">{{ f.fineid }}</td>
+              <td>{{ f.studentid }}</td>
+              <td>{{ f.borrowid }}</td>
+              <td>₱{{ f.fineamount }}</td>
+              <td>{{ f.daysOverdue }}</td>
+              <td>
+                <app-status-badge [status]="f.paymentstatus" type="payment" />
+              </td>
+              <td>
+                @if (f.paymentstatus === 'Unpaid') {
+                  <button type="button" (click)="markPaid(f.fineid)" class="link-action">Mark paid</button>
+                } @else {
+                  <span class="text-muted" style="font-size: 0.875rem;">—</span>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="7" class="empty-cell">No fines.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

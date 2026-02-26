@@ -1,0 +1,41 @@
+<div class="page-section">
+  <h2 class="page-title">Fines</h2>
+
+  <div class="card">
+    <p class="stat-label">Total unpaid</p>
+    <p class="stat-value">₱{{ totalUnpaid() }}</p>
+  </div>
+
+  <div class="card-lg">
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Borrow ID</th>
+            <th>Amount</th>
+            <th>Days overdue</th>
+            <th>Payment status</th>
+            <th>Payment date</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (f of fines(); track f.fineid) {
+            <tr>
+              <td class="text-primary">{{ f.borrowid }}</td>
+              <td>₱{{ f.fineamount }}</td>
+              <td>{{ f.daysOverdue }}</td>
+              <td>
+                <app-status-badge [status]="f.paymentstatus" type="payment" />
+              </td>
+              <td>{{ f.paymentdate ?? '—' }}</td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5" class="empty-cell">No fines.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

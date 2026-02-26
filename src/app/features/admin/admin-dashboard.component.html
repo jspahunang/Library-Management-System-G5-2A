@@ -1,0 +1,23 @@
+<div class="page-section">
+  <h2 class="page-title">System overview</h2>
+
+  <div class="grid-cards">
+    <div class="stat-card">
+      <p class="stat-label">Total users</p>
+      <p class="stat-value">{{ totalUsers() }}</p>
+      <a [routerLink]="['/admin', 'users']" class="link-accent">Manage users</a>
+    </div>
+    <div class="stat-card">
+      <p class="stat-label">Total books</p>
+      <p class="stat-value">{{ totalBooks() }}</p>
+    </div>
+    <div class="stat-card">
+      <p class="stat-label">Active borrows</p>
+      <p class="stat-value">{{ activeBorrows() }}</p>
+    </div>
+    <div class="stat-card">
+      <p class="stat-label">Users by role</p>
+      <p class="stat-value" style="font-size: 0.875rem; font-weight: normal;">Admin: {{ usersByRole().Admin }}, Librarian: {{ usersByRole().Librarian }}, Student: {{ usersByRole().Student }}, Teacher: {{ usersByRole().Teacher }}</p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,60 @@
+<div class="page-section">
+  <h2 class="page-title">Dashboard</h2>
+
+  <div class="grid-cards">
+    <div class="stat-card">
+      <p class="stat-label">Total Borrowed</p>
+      <p class="stat-value">{{ borrowedCount() }}</p>
+      <a [routerLink]="['/student', 'borrowed']" class="link-accent">View all</a>
+    </div>
+    <div class="stat-card">
+      <p class="stat-label">Overdue Books</p>
+      <p class="stat-value stat-value-warning">{{ overdueCount() }}</p>
+      <a [routerLink]="['/student', 'borrowed']" class="link-accent">View all</a>
+    </div>
+    <div class="stat-card">
+      <p class="stat-label">Total Fines</p>
+      <p class="stat-value">₱{{ totalFines() }}</p>
+      <a [routerLink]="['/student', 'fines']" class="link-accent">View all</a>
+    </div>
+    <div class="stat-card">
+      <p class="stat-label">Unread Notifications</p>
+      <p class="stat-value">{{ unreadNotifications() }}</p>
+      <a [routerLink]="['/student', 'notifications']" class="link-accent">View all</a>
+    </div>
+  </div>
+
+  <div class="card-lg">
+    <div class="card-header">
+      <h3 class="card-title">Recent borrows</h3>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Book</th>
+            <th>Borrow date</th>
+            <th>Due date</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (r of recentBorrows(); track r.borrowid) {
+            <tr>
+              <td class="text-primary">{{ r.booktitle }}</td>
+              <td>{{ r.borrowdate }}</td>
+              <td>{{ r.duedate }}</td>
+              <td>
+                <app-status-badge [status]="r.status" type="borrow" />
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="4" class="empty-cell">No borrows yet.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
