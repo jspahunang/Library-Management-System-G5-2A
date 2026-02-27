@@ -1,5 +1,12 @@
 <div class="page-section">
-  <h2 class="page-title">Dashboard</h2>
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h2 class="page-title" style="margin-bottom: 0;">Dashboard</h2>
+    <button class="btn btn-primary" (click)="downloadMonthlyReport()">
+      <span class="material-icons"
+        style="font-size: 1.2rem; margin-right: 0.5rem; vertical-align: middle;">download</span>
+      Download Monthly Report
+    </button>
+  </div>
 
   <div class="grid-cards">
     <div class="stat-card">
@@ -40,18 +47,18 @@
         </thead>
         <tbody>
           @for (r of overdueRecords(); track r.borrowid) {
-            <tr>
-              <td class="text-primary">{{ r.booktitle }}</td>
-              <td>{{ r.studentid }}</td>
-              <td>{{ r.duedate }}</td>
-              <td>
-                <app-status-badge [status]="r.status" type="borrow" />
-              </td>
-            </tr>
+          <tr>
+            <td class="text-primary">{{ r.booktitle }}</td>
+            <td>{{ r.studentid }}</td>
+            <td>{{ r.duedate }}</td>
+            <td>
+              <app-status-badge [status]="r.status" type="borrow" />
+            </td>
+          </tr>
           } @empty {
-            <tr>
-              <td colspan="4" class="empty-cell">No overdue borrows.</td>
-            </tr>
+          <tr>
+            <td colspan="4" class="empty-cell">No overdue borrows.</td>
+          </tr>
           }
         </tbody>
       </table>
