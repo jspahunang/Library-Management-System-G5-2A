@@ -8,11 +8,11 @@ import type { Notification } from '../models/notification.model';
 
 /** Mock users (tblUser) */
 export const MOCK_USERS: User[] = [
-  { userid: 'u1', Fname: 'Maria', Minitial: 'S', Lname: 'Admin', email: 'admin@lms.edu', phone: '09171234567', status: 'Active', role: 'Admin' },
-  { userid: 'u2', Fname: 'Juan', Minitial: 'D', Lname: 'Librarian', email: 'librarian@lms.edu', phone: '09181234567', status: 'Active', role: 'Librarian' },
-  { userid: 'u3', Fname: 'Ana', Minitial: 'B', Lname: 'Student', email: 'student@lms.edu', phone: '09191234567', status: 'Active', role: 'Student' },
-  { userid: 'u4', Fname: 'Pedro', Minitial: 'C', Lname: 'Teacher', email: 'teacher@lms.edu', phone: '09201234567', status: 'Active', role: 'Teacher' },
-  { userid: 'u5', Fname: 'Liza', Minitial: 'M', Lname: 'Garcia', email: 'liza@lms.edu', phone: '09211234567', status: 'Active', role: 'Student' },
+  { userid: 'u1', Fname: 'Jerick', Minitial: 'P', Lname: 'Signapan', email: 'admin@lms.edu', phone: '09123456789', status: 'Active', role: 'Admin' },
+  { userid: 'u2', Fname: 'John Simon', Minitial: 'A', Lname: 'Pahunang', email: 'librarian@lms.edu', phone: '09234567891', status: 'Active', role: 'Librarian' },
+  { userid: 'u3', Fname: 'Jackrey', Minitial: 'H', Lname: 'Natingga', email: 'student@lms.edu', phone: '09345678912', status: 'Active', role: 'Student' },
+  { userid: 'u4', Fname: 'Crystal Donn', Minitial: 'C', Lname: 'Sarasara', email: 'teacher@lms.edu', phone: '09456789123', status: 'Active', role: 'Teacher' },
+  { userid: 'u5', Fname: 'Stephen', Minitial: 'A', Lname: 'Jalagat', email: 'liza@lms.edu', phone: '09567891234', status: 'Active', role: 'Student' },
 ];
 
 /** Mock logins (tblLogin) - password for all: password123 */
@@ -21,7 +21,7 @@ export const MOCK_LOGINS: Login[] = [
   { userid: 'u2', email: 'librarian@lms.edu', password: 'password123' },
   { userid: 'u3', email: 'student@lms.edu', password: 'password123' },
   { userid: 'u4', email: 'teacher@lms.edu', password: 'password123' },
-  { userid: 'u5', email: 'liza@lms.edu', password: 'password123' },
+  { userid: 'u5', email: 'student2@lms.edu', password: 'password123' },
 ];
 
 /** Role-specific records */
