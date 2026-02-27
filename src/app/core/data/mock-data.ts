@@ -8,11 +8,11 @@ import type { Notification } from '../models/notification.model';
 
 /** Mock users (tblUser) */
 export const MOCK_USERS: User[] = [
-  { userid: 'u1', Fname: 'Jerick', Minitial: 'P', Lname: 'Signapan', email: 'admin@lms.edu', phone: '09123456789', status: 'Active', role: 'Admin' },
-  { userid: 'u2', Fname: 'John Simon', Minitial: 'A', Lname: 'Pahunang', email: 'librarian@lms.edu', phone: '09234567891', status: 'Active', role: 'Librarian' },
-  { userid: 'u3', Fname: 'Jackrey', Minitial: 'H', Lname: 'Natingga', email: 'student@lms.edu', phone: '09345678912', status: 'Active', role: 'Student' },
-  { userid: 'u4', Fname: 'Crystal Donn', Minitial: 'C', Lname: 'Sarasara', email: 'teacher@lms.edu', phone: '09456789123', status: 'Active', role: 'Teacher' },
-  { userid: 'u5', Fname: 'Stephen', Minitial: 'A', Lname: 'Jalagat', email: 'liza@lms.edu', phone: '09567891234', status: 'Active', role: 'Student' },
+  { userid: 'u1', Fname: 'Jerick', Minitial: 'P.', Lname: 'Signapan', email: 'admin@lms.edu', phone: '09123456789', status: 'Active', role: 'Admin' },
+  { userid: 'u2', Fname: 'John Simon', Minitial: 'A.', Lname: 'Pahunang', email: 'librarian@lms.edu', phone: '09234567891', status: 'Active', role: 'Librarian' },
+  { userid: 'u3', Fname: 'Jackrey', Minitial: 'H.', Lname: 'Natingga', email: 'student@lms.edu', phone: '09345678912', status: 'Active', role: 'Student' },
+  { userid: 'u4', Fname: 'Crystal Donn', Minitial: 'C.', Lname: 'Sarasara', email: 'teacher@lms.edu', phone: '09456789123', status: 'Active', role: 'Teacher' },
+  { userid: 'u5', Fname: 'Stephen', Minitial: 'A.', Lname: 'Jalagat', email: 'student2@lms.edu', phone: '09567891234', status: 'Active', role: 'Student' },
 ];
 
 /** Mock logins (tblLogin) - password for all: password123 */
