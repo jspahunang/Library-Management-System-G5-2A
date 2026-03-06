@@ -7,11 +7,12 @@ import { FineService } from '../../core/services/fine.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { RoleService } from '../../core/services/role.service';
 import { StatusBadgeComponent } from '../../shared/components/status-badge/status-badge.component';
+import { TableModule } from 'primeng/table';
 
 @Component({
   selector: 'app-student-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, StatusBadgeComponent],
+  imports: [CommonModule, RouterLink, StatusBadgeComponent, TableModule],
   templateUrl: './student-dashboard.component.html',
   styleUrl: './student-dashboard.component.scss',
 })
@@ -55,5 +56,5 @@ export class StudentDashboardComponent {
     private borrowService: BorrowService,
     private fineService: FineService,
     private notificationService: NotificationService
-  ) {}
+  ) { }
 }

@@ -1,24 +1,19 @@
 <div class="page-section">
   <h2 class="page-title">Fines</h2>
 
-  <div class="flex gap-2">
-    <input
-      type="text"
-      placeholder="Filter by student ID..."
-      class="input input-sm"
-      [value]="searchStudentId()"
-      (input)="searchStudentId.set($any($event.target).value)"
-    />
+  <div class="flex gap-2 mb-4">
+    <input type="text" pInputText placeholder="Filter by student ID..." class="w-full max-w-[20rem]"
+      [value]="searchStudentId()" (input)="searchStudentId.set($any($event.target).value)" />
   </div>
 
   @if (message()) {
-    <div class="alert alert-success">{{ message() }}</div>
+  <p-message severity="success" [text]="message()" styleClass="w-full mb-4"></p-message>
   }
 
   <div class="card-lg">
     <div class="table-wrap">
-      <table class="data-table">
-        <thead>
+      <p-table [value]="filteredFines()" styleClass="p-datatable-striped">
+        <ng-template pTemplate="header">
           <tr>
             <th>Fine ID</th>
             <th>Student ID</th>
@@ -28,33 +23,32 @@
             <th>Status</th>
             <th>Action</th>
           </tr>
-        </thead>
-        <tbody>
-          @for (f of filteredFines(); track f.fineid) {
-            <tr>
-              <td class="text-primary">{{ f.fineid }}</td>
-              <td>{{ f.studentid }}</td>
-              <td>{{ f.borrowid }}</td>
-              <td>₱{{ f.fineamount }}</td>
-              <td>{{ f.daysOverdue }}</td>
-              <td>
-                <app-status-badge [status]="f.paymentstatus" type="payment" />
-              </td>
-              <td>
-                @if (f.paymentstatus === 'Unpaid') {
-                  <button type="button" (click)="markPaid(f.fineid)" class="link-action">Mark paid</button>
-                } @else {
-                  <span class="text-muted" style="font-size: 0.875rem;">—</span>
-                }
-              </td>
-            </tr>
-          } @empty {
-            <tr>
-              <td colspan="7" class="empty-cell">No fines.</td>
-            </tr>
-          }
-        </tbody>
-      </table>
+        </ng-template>
+        <ng-template pTemplate="body" let-f>
+          <tr>
+            <td class="text-primary">{{ f.fineid }}</td>
+            <td>{{ f.studentid }}</td>
+            <td>{{ f.borrowid }}</td>
+            <td>₱{{ f.fineamount }}</td>
+            <td>{{ f.daysOverdue }}</td>
+            <td>
+              <app-status-badge [status]="f.paymentstatus" type="payment" />
+            </td>
+            <td>
+              @if (f.paymentstatus === 'Unpaid') {
+              <p-button (onClick)="markPaid(f.fineid)" label="Mark paid" [text]="true" size="small"></p-button>
+              } @else {
+              <span class="text-muted" style="font-size: 0.875rem;">—</span>
+              }
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="7" class="empty-cell">No fines.</td>
+          </tr>
+        </ng-template>
+      </p-table>
     </div>
   </div>
 </div>

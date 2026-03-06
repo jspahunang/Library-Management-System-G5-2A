@@ -4,11 +4,12 @@ import { AuthService } from '../../core/services/auth.service';
 import { FineService } from '../../core/services/fine.service';
 import { RoleService } from '../../core/services/role.service';
 import { StatusBadgeComponent } from '../../shared/components/status-badge/status-badge.component';
+import { TableModule } from 'primeng/table';
 
 @Component({
   selector: 'app-fines',
   standalone: true,
-  imports: [CommonModule, StatusBadgeComponent],
+  imports: [CommonModule, StatusBadgeComponent, TableModule],
   templateUrl: './fines.component.html',
   styleUrl: './fines.component.scss',
 })
@@ -32,5 +33,5 @@ export class FinesComponent {
     private auth: AuthService,
     private roleService: RoleService,
     private fineService: FineService
-  ) {}
+  ) { }
 }

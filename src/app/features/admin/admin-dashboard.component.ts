@@ -4,11 +4,12 @@ import { RouterLink } from '@angular/router';
 import { UserService } from '../../core/services/user.service';
 import { BookService } from '../../core/services/book.service';
 import { BorrowService } from '../../core/services/borrow.service';
+import { ChartModule } from 'primeng/chart';
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, ChartModule],
   templateUrl: './admin-dashboard.component.html',
   styleUrl: './admin-dashboard.component.scss',
 })
@@ -26,9 +27,23 @@ export class AdminDashboardComponent {
     };
   });
 
+  chartData = computed(() => {
+    const roles = this.usersByRole();
+    return {
+      labels: ['Admin', 'Librarian', 'Student', 'Teacher'],
+      datasets: [
+        {
+          data: [roles.Admin, roles.Librarian, roles.Student, roles.Teacher],
+          backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6'],
+          hoverBackgroundColor: ['#2563eb', '#059669', '#d97706', '#7c3aed']
+        }
+      ]
+    };
+  });
+
   constructor(
     private userService: UserService,
     private bookService: BookService,
     private borrowService: BorrowService
-  ) {}
+  ) { }
 }

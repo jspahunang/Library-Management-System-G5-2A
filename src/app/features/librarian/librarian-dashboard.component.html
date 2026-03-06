@@ -1,11 +1,7 @@
 <div class="page-section">
   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
     <h2 class="page-title" style="margin-bottom: 0;">Dashboard</h2>
-    <button class="btn btn-primary" (click)="downloadMonthlyReport()">
-      <span class="material-icons"
-        style="font-size: 1.2rem; margin-right: 0.5rem; vertical-align: middle;">download</span>
-      Download Monthly Report
-    </button>
+    <p-button (onClick)="downloadMonthlyReport()" icon="pi pi-download" label="Download Monthly Report"></p-button>
   </div>
 
   <div class="grid-cards">
@@ -31,22 +27,30 @@
     </div>
   </div>
 
+  <div class="card-lg mb-8">
+    <div class="card-header">
+      <h3 class="card-title">System Overview Chart</h3>
+    </div>
+    <div class="p-6">
+      <p-chart type="bar" [data]="chartData()"></p-chart>
+    </div>
+  </div>
+
   <div class="card-lg">
     <div class="card-header">
       <h3 class="card-title">Overdue borrows</h3>
     </div>
     <div class="table-wrap">
-      <table class="data-table">
-        <thead>
+      <p-table [value]="overdueRecords()" styleClass="p-datatable-striped">
+        <ng-template pTemplate="header">
           <tr>
             <th>Book</th>
             <th>Student ID</th>
             <th>Due date</th>
             <th>Status</th>
           </tr>
-        </thead>
-        <tbody>
-          @for (r of overdueRecords(); track r.borrowid) {
+        </ng-template>
+        <ng-template pTemplate="body" let-r>
           <tr>
             <td class="text-primary">{{ r.booktitle }}</td>
             <td>{{ r.studentid }}</td>
@@ -55,13 +59,13 @@
               <app-status-badge [status]="r.status" type="borrow" />
             </td>
           </tr>
-          } @empty {
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
           <tr>
             <td colspan="4" class="empty-cell">No overdue borrows.</td>
           </tr>
-          }
-        </tbody>
-      </table>
+        </ng-template>
+      </p-table>
     </div>
   </div>
 </div>

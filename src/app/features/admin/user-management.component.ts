@@ -5,11 +5,17 @@ import { LoginService } from '../../core/services/login.service';
 import { RoleService } from '../../core/services/role.service';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import type { User, UserRole } from '../../core/models';
+import { TableModule } from 'primeng/table';
+import { DialogModule } from 'primeng/dialog';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
+import { SelectModule } from 'primeng/select';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-user-management',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, TableModule, DialogModule, ButtonModule, InputTextModule, SelectModule],
   templateUrl: './user-management.component.html',
   styleUrl: './user-management.component.scss',
 })
@@ -43,7 +49,15 @@ export class UserManagementComponent {
     role: ['Student' as UserRole, Validators.required],
   });
 
-  constructor() {}
+  statusOptions = [{ label: 'Active', value: 'Active' }, { label: 'Inactive', value: 'Inactive' }];
+  roleOptions = [
+    { label: 'Admin', value: 'Admin' },
+    { label: 'Librarian', value: 'Librarian' },
+    { label: 'Student', value: 'Student' },
+    { label: 'Teacher', value: 'Teacher' }
+  ];
+
+  constructor() { }
 
   openAdd(): void {
     this.editingId.set(null);
@@ -100,7 +114,25 @@ export class UserManagementComponent {
   }
 
   delete(userid: string): void {
-    if (confirm('Remove this user? This will not remove login or role records.')) this.userService.delete(userid);
+    Swal.fire({
+      title: 'Remove this user?',
+      text: "This will not remove login or role records.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#4f46e5',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.userService.delete(userid);
+        Swal.fire({
+          title: 'Deleted!',
+          text: 'The user has been removed.',
+          icon: 'success',
+          confirmButtonColor: '#4f46e5'
+        });
+      }
+    });
   }
 }
 

@@ -3,11 +3,14 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { LoginService } from '../../core/services/login.service';
+import { InputTextModule } from 'primeng/inputtext';
+import { ButtonModule } from 'primeng/button';
+import { MessageModule } from 'primeng/message';
 
 @Component({
   selector: 'app-reset-password',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, InputTextModule, ButtonModule, MessageModule],
   templateUrl: './reset-password.component.html',
   styleUrl: './reset-password.component.scss',
 })
@@ -38,7 +41,7 @@ export class ResetPasswordComponent {
     if (result.success) {
       this.success = true;
       this.newPassword = result.newPassword ?? 'password123';
-      this.message = result.message;
+      this.message = `${result.message} Use this temporary password to sign in: ${this.newPassword}`;
     } else {
       this.message = result.message;
     }

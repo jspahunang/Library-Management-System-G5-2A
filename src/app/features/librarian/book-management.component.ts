@@ -3,11 +3,16 @@ import { CommonModule } from '@angular/common';
 import { BookService } from '../../core/services/book.service';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
+import { TableModule } from 'primeng/table';
+import { DialogModule } from 'primeng/dialog';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-book-management',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, TableModule, DialogModule, ButtonModule, InputTextModule],
   templateUrl: './book-management.component.html',
   styleUrl: './book-management.component.scss',
 })
@@ -35,7 +40,7 @@ export class BookManagementComponent {
     totalCopies: [1, [Validators.required, Validators.min(1)]],
   });
 
-  constructor() {}
+  constructor() { }
 
   openAdd(): void {
     this.editingId.set(null);
@@ -82,7 +87,25 @@ export class BookManagementComponent {
   }
 
   delete(bookid: string): void {
-    if (confirm('Delete this book from catalog?')) this.bookService.delete(bookid);
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#4f46e5',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.bookService.delete(bookid);
+        Swal.fire({
+          title: 'Deleted!',
+          text: 'The book has been removed from the catalog.',
+          icon: 'success',
+          confirmButtonColor: '#4f46e5'
+        });
+      }
+    });
   }
 
   onSearch(value: string | null | undefined): void {

@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { AuthService } from '../../core/services/auth.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { RoleService } from '../../core/services/role.service';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-notifications',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ButtonModule],
   templateUrl: './notifications.component.html',
   styleUrl: './notifications.component.scss',
 })
@@ -31,7 +32,7 @@ export class NotificationsComponent {
     private auth: AuthService,
     private roleService: RoleService,
     private notificationService: NotificationService
-  ) {}
+  ) { }
 
   markAsRead(id: string): void {
     this.notificationService.markAsRead(id);

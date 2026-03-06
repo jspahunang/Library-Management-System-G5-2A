@@ -15,3 +15,17 @@
   margin-top: 1rem;
   text-align: center;
 }
+
+:host ::ng-deep p-password {
+  display: block;
+  width: 100%;
+}
+
+:host ::ng-deep p-password .p-password {
+  display: flex;
+  width: 100%;
+}
+
+:host ::ng-deep p-password .p-password>input {
+  width: 100%;
+}

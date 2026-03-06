@@ -6,11 +6,14 @@ import { FineService } from '../../core/services/fine.service';
 import { BookService } from '../../core/services/book.service';
 import { UserService } from '../../core/services/user.service';
 import { StatusBadgeComponent } from '../../shared/components/status-badge/status-badge.component';
+import { TableModule } from 'primeng/table';
+import { ButtonModule } from 'primeng/button';
+import { ChartModule } from 'primeng/chart';
 
 @Component({
   selector: 'app-librarian-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, StatusBadgeComponent],
+  imports: [CommonModule, RouterLink, StatusBadgeComponent, TableModule, ButtonModule, ChartModule],
   templateUrl: './librarian-dashboard.component.html',
   styleUrl: './librarian-dashboard.component.scss',
 })
@@ -21,6 +24,19 @@ export class LibrarianDashboardComponent {
   totalBooks = computed(() => this.bookService.getAll().length);
 
   overdueRecords = computed(() => this.borrowService.getOverdue().slice(0, 5));
+
+  chartData = computed(() => ({
+    labels: ['Total Books', 'Active Borrows', 'Overdue Borrow'],
+    datasets: [
+      {
+        label: 'System Overview',
+        data: [this.totalBooks(), this.borrowedCount(), this.overdueCount()],
+        backgroundColor: ['rgba(59, 130, 246, 0.7)', 'rgba(16, 185, 129, 0.7)', 'rgba(239, 68, 68, 0.7)'],
+        borderColor: ['#3b82f6', '#10b981', '#ef4444'],
+        borderWidth: 1
+      }
+    ]
+  }));
 
   private userService = inject(UserService);
 

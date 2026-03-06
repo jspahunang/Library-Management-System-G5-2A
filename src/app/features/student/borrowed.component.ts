@@ -5,11 +5,13 @@ import { AuthService } from '../../core/services/auth.service';
 import { BorrowService } from '../../core/services/borrow.service';
 import { RoleService } from '../../core/services/role.service';
 import { StatusBadgeComponent } from '../../shared/components/status-badge/status-badge.component';
+import { TableModule } from 'primeng/table';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-borrowed',
   standalone: true,
-  imports: [CommonModule, RouterLink, StatusBadgeComponent],
+  imports: [CommonModule, RouterLink, StatusBadgeComponent, TableModule, ButtonModule],
   templateUrl: './borrowed.component.html',
   styleUrl: './borrowed.component.scss',
 })
@@ -32,5 +34,5 @@ export class BorrowedComponent {
     private auth: AuthService,
     private roleService: RoleService,
     private borrowService: BorrowService
-  ) {}
+  ) { }
 }

@@ -29,32 +29,31 @@
       <h3 class="card-title">Recent borrows</h3>
     </div>
     <div class="table-wrap">
-      <table class="data-table">
-        <thead>
+      <p-table [value]="recentBorrows()" styleClass="p-datatable-sm p-datatable-striped">
+        <ng-template pTemplate="header">
           <tr>
             <th>Book</th>
             <th>Borrow date</th>
             <th>Due date</th>
             <th>Status</th>
           </tr>
-        </thead>
-        <tbody>
-          @for (r of recentBorrows(); track r.borrowid) {
-            <tr>
-              <td class="text-primary">{{ r.booktitle }}</td>
-              <td>{{ r.borrowdate }}</td>
-              <td>{{ r.duedate }}</td>
-              <td>
-                <app-status-badge [status]="r.status" type="borrow" />
-              </td>
-            </tr>
-          } @empty {
-            <tr>
-              <td colspan="4" class="empty-cell">No borrows yet.</td>
-            </tr>
-          }
-        </tbody>
-      </table>
+        </ng-template>
+        <ng-template pTemplate="body" let-r>
+          <tr>
+            <td class="text-primary">{{ r.booktitle }}</td>
+            <td>{{ r.borrowdate }}</td>
+            <td>{{ r.duedate }}</td>
+            <td>
+              <app-status-badge [status]="r.status" type="borrow" />
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="4" class="empty-cell text-center p-4 text-gray-500">No borrows yet.</td>
+          </tr>
+        </ng-template>
+      </p-table>
     </div>
   </div>
 </div>
