@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { STORAGE_KEYS } from '../constants/storage-keys';
 import { getLocalStorage } from '../utils/local-storage.util';
 import type { Book } from '../models';
@@ -13,9 +13,15 @@ export class BookService {
     return getLocalStorage();
   }
 
-  getAll(): Book[] {
+  private _books = signal<Book[]>(this.load());
+
+  private load(): Book[] {
     const raw = this.storage?.getItem(STORAGE_KEYS.BOOKS);
     return raw ? (JSON.parse(raw) as Book[]) : [];
+  }
+
+  getAll(): Book[] {
+    return this._books();
   }
 
   getById(bookid: string): Book | undefined {
@@ -41,21 +47,24 @@ export class BookService {
   add(book: Book): void {
     const list = this.getAll();
     if (list.some((b) => b.bookid === book.bookid)) return;
-    list.push(book);
-    this.storage?.setItem(STORAGE_KEYS.BOOKS, JSON.stringify(list));
+    const newList = [...list, book];
+    this._books.set(newList);
+    this.storage?.setItem(STORAGE_KEYS.BOOKS, JSON.stringify(newList));
   }
 
   update(bookid: string, updates: Partial<Book>): void {
-    const list = this.getAll();
+    const list = [...this.getAll()];
     const i = list.findIndex((b) => b.bookid === bookid);
     if (i === -1) return;
     list[i] = { ...list[i], ...updates };
+    this._books.set(list);
     this.storage?.setItem(STORAGE_KEYS.BOOKS, JSON.stringify(list));
   }
 
   delete(bookid: string): void {
-    const list = this.getAll().filter((b) => b.bookid !== bookid);
-    this.storage?.setItem(STORAGE_KEYS.BOOKS, JSON.stringify(list));
+    const newList = this.getAll().filter((b) => b.bookid !== bookid);
+    this._books.set(newList);
+    this.storage?.setItem(STORAGE_KEYS.BOOKS, JSON.stringify(newList));
   }
 
   decreaseAvailableCopies(bookid: string, by = 1): void {
@@ -77,6 +86,7 @@ export class BookService {
   }
 
   setAll(books: Book[]): void {
+    this._books.set(books);
     this.storage?.setItem(STORAGE_KEYS.BOOKS, JSON.stringify(books));
   }
 }

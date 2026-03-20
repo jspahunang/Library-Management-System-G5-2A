@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { STORAGE_KEYS } from '../constants/storage-keys';
 import { getLocalStorage } from '../utils/local-storage.util';
 import type { Notification } from '../models';
@@ -13,9 +13,15 @@ export class NotificationService {
     return getLocalStorage();
   }
 
-  getAll(): Notification[] {
+  private _notifications = signal<Notification[]>(this.load());
+
+  private load(): Notification[] {
     const raw = this.storage?.getItem(STORAGE_KEYS.NOTIFICATIONS);
     return raw ? (JSON.parse(raw) as Notification[]) : [];
+  }
+
+  getAll(): Notification[] {
+    return this._notifications();
   }
 
   getByStudent(studentid: string): Notification[] {
@@ -34,28 +40,31 @@ export class NotificationService {
       notificationid: `notif-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
       read: false,
     };
-    const list = this.getAll();
-    list.push(n);
+    const list = [...this.getAll(), n];
+    this._notifications.set(list);
     this.storage?.setItem(STORAGE_KEYS.NOTIFICATIONS, JSON.stringify(list));
   }
 
   markAsRead(notificationid: string): void {
-    const list = this.getAll();
+    const list = [...this.getAll()];
     const i = list.findIndex((n) => n.notificationid === notificationid);
     if (i === -1) return;
     list[i] = { ...list[i], read: true };
+    this._notifications.set(list);
     this.storage?.setItem(STORAGE_KEYS.NOTIFICATIONS, JSON.stringify(list));
   }
 
   markAllAsRead(studentid: string): void {
-    const list = this.getAll();
+    const list = [...this.getAll()];
     for (let i = 0; i < list.length; i++) {
       if (list[i].studentid === studentid && !list[i].read) list[i] = { ...list[i], read: true };
     }
+    this._notifications.set(list);
     this.storage?.setItem(STORAGE_KEYS.NOTIFICATIONS, JSON.stringify(list));
   }
 
   setAll(notifications: Notification[]): void {
+    this._notifications.set(notifications);
     this.storage?.setItem(STORAGE_KEYS.NOTIFICATIONS, JSON.stringify(notifications));
   }
 }

@@ -8,6 +8,7 @@ import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
 import { FormsModule } from '@angular/forms';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-transactions',
@@ -53,11 +54,19 @@ export class TransactionsComponent {
     this.message.set(result.message);
     if (result.success) {
       this.selectedBookId.set('');
+      Swal.fire({ title: 'Borrowed!', text: result.message, icon: 'success', timer: 1500, showConfirmButton: false });
+    } else {
+      Swal.fire({ title: 'Failed', text: result.message, icon: 'error' });
     }
   }
 
   doReturn(borrowid: string): void {
     const result = this.borrowService.return(borrowid);
     this.message.set(result.message);
+    if (result.success) {
+      Swal.fire({ title: 'Returned!', text: result.message, icon: 'success', timer: 1500, showConfirmButton: false });
+    } else {
+      Swal.fire({ title: 'Failed', text: result.message, icon: 'error' });
+    }
   }
 }

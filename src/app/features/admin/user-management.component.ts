@@ -93,6 +93,7 @@ export class UserManagementComponent {
     const id = this.editingId();
     if (id) {
       this.userService.update(id, { ...v });
+      Swal.fire({ title: 'Updated!', text: 'User details have been successfully updated.', icon: 'success', timer: 1500, showConfirmButton: false });
     } else {
       const userid = `u-${Date.now()}`;
       this.userService.add({
@@ -109,6 +110,7 @@ export class UserManagementComponent {
         ...this.loginService.getAll(),
         { userid, email: v.email, password: 'password123' },
       ]);
+      Swal.fire({ title: 'Added!', text: 'New user has been successfully created.', icon: 'success', timer: 1500, showConfirmButton: false });
     }
     this.cancelForm();
   }

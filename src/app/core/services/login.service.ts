@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { STORAGE_KEYS } from '../constants/storage-keys';
 import { getLocalStorage } from '../utils/local-storage.util';
 import type { Login } from '../models';
@@ -13,9 +13,15 @@ export class LoginService {
     return getLocalStorage();
   }
 
-  getAll(): Login[] {
+  private _logins = signal<Login[]>(this.load());
+
+  private load(): Login[] {
     const raw = this.storage?.getItem(STORAGE_KEYS.LOGINS);
     return raw ? (JSON.parse(raw) as Login[]) : [];
+  }
+
+  getAll(): Login[] {
+    return this._logins();
   }
 
   getByUserId(userid: string): Login | undefined {
@@ -23,6 +29,7 @@ export class LoginService {
   }
 
   setAll(logins: Login[]): void {
+    this._logins.set(logins);
     this.storage?.setItem(STORAGE_KEYS.LOGINS, JSON.stringify(logins));
   }
 
@@ -39,7 +46,7 @@ export class LoginService {
     }
     const newPassword = 'password123';
     login.password = newPassword;
-    this.setAll(logins);
+    this.setAll([...logins]);
     return { success: true, message: 'Password has been reset.', newPassword };
   }
 }

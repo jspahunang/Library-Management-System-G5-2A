@@ -68,6 +68,7 @@ export class BookManagementComponent {
     const id = this.editingId();
     if (id) {
       this.bookService.update(id, { booktitle: v.booktitle, author: v.author, isbn: v.isbn, category: v.category, totalCopies: v.totalCopies });
+      Swal.fire({ title: 'Updated!', text: 'Book details have been successfully updated.', icon: 'success', timer: 1500, showConfirmButton: false });
     } else {
       const bookid = `b-${Date.now()}`;
       const existing = this.bookService.getById(bookid);
@@ -82,6 +83,7 @@ export class BookManagementComponent {
         totalCopies: v.totalCopies,
         status: 'Available',
       });
+      Swal.fire({ title: 'Added!', text: 'New book has been successfully added to catalog.', icon: 'success', timer: 1500, showConfirmButton: false });
     }
     this.cancelForm();
   }

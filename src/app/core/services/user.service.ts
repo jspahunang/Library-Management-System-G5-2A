@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { STORAGE_KEYS } from '../constants/storage-keys';
 import { getLocalStorage } from '../utils/local-storage.util';
 import type { User } from '../models';
@@ -13,9 +13,15 @@ export class UserService {
     return getLocalStorage();
   }
 
-  getAll(): User[] {
+  private _users = signal<User[]>(this.load());
+
+  private load(): User[] {
     const raw = this.storage?.getItem(STORAGE_KEYS.USERS);
     return raw ? (JSON.parse(raw) as User[]) : [];
+  }
+
+  getAll(): User[] {
+    return this._users();
   }
 
   getById(userid: string): User | undefined {
@@ -29,24 +35,28 @@ export class UserService {
   add(user: User): void {
     const list = this.getAll();
     if (list.some((u) => u.userid === user.userid)) return;
-    list.push(user);
-    this.storage?.setItem(STORAGE_KEYS.USERS, JSON.stringify(list));
+    const newList = [...list, user];
+    this._users.set(newList);
+    this.storage?.setItem(STORAGE_KEYS.USERS, JSON.stringify(newList));
   }
 
   update(userid: string, updates: Partial<User>): void {
-    const list = this.getAll();
+    const list = [...this.getAll()];
     const i = list.findIndex((u) => u.userid === userid);
     if (i === -1) return;
     list[i] = { ...list[i], ...updates };
+    this._users.set(list);
     this.storage?.setItem(STORAGE_KEYS.USERS, JSON.stringify(list));
   }
 
   delete(userid: string): void {
-    const list = this.getAll().filter((u) => u.userid !== userid);
-    this.storage?.setItem(STORAGE_KEYS.USERS, JSON.stringify(list));
+    const newList = this.getAll().filter((u) => u.userid !== userid);
+    this._users.set(newList);
+    this.storage?.setItem(STORAGE_KEYS.USERS, JSON.stringify(newList));
   }
 
   setAll(users: User[]): void {
+    this._users.set(users);
     this.storage?.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
   }
 }

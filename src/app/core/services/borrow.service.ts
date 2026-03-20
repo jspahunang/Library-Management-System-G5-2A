@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { STORAGE_KEYS } from '../constants/storage-keys';
 import { getLocalStorage } from '../utils/local-storage.util';
 import { BookService } from './book.service';
@@ -25,9 +25,15 @@ export class BorrowService {
     private notificationService: NotificationService
   ) {}
 
-  getAll(): BorrowRecord[] {
+  private _records = signal<BorrowRecord[]>(this.load());
+
+  private load(): BorrowRecord[] {
     const raw = this.storage?.getItem(STORAGE_KEYS.BORROW_RECORDS);
     return raw ? (JSON.parse(raw) as BorrowRecord[]) : [];
+  }
+
+  getAll(): BorrowRecord[] {
+    return this._records();
   }
 
   getById(borrowid: string): BorrowRecord | undefined {
@@ -56,16 +62,19 @@ export class BorrowService {
   }
 
   private updateStatuses(): void {
-    const list = this.getAll();
+    const list = [...this.getAll()];
     const today = new Date().toISOString().slice(0, 10);
     let changed = false;
     for (let i = 0; i < list.length; i++) {
       if (list[i].status === 'Borrowed' && list[i].returndate === null && list[i].duedate < today) {
-        list[i].status = 'Overdue';
+        list[i] = { ...list[i], status: 'Overdue' };
         changed = true;
       }
     }
-    if (changed) this.storage?.setItem(STORAGE_KEYS.BORROW_RECORDS, JSON.stringify(list));
+    if (changed) {
+      this._records.set(list);
+      this.storage?.setItem(STORAGE_KEYS.BORROW_RECORDS, JSON.stringify(list));
+    }
   }
 
   borrow(bookid: string, studentid: string): { success: boolean; message: string } {
@@ -85,8 +94,8 @@ export class BorrowService {
       returndate: null,
       status: 'Borrowed',
     };
-    const list = this.getAll();
-    list.push(record);
+    const list = [...this.getAll(), record];
+    this._records.set(list);
     this.storage?.setItem(STORAGE_KEYS.BORROW_RECORDS, JSON.stringify(list));
     this.bookService.decreaseAvailableCopies(bookid, 1);
     this.notificationService.add({
@@ -110,6 +119,7 @@ export class BorrowService {
     const due = new Date(rec.duedate);
     const daysOverdue = Math.max(0, Math.floor((today.getTime() - due.getTime()) / (24 * 60 * 60 * 1000)));
     list[i] = { ...rec, returndate, status: 'Returned' };
+    this._records.set([...list]);
     this.storage?.setItem(STORAGE_KEYS.BORROW_RECORDS, JSON.stringify(list));
     this.bookService.increaseAvailableCopies(rec.bookid, 1);
     if (daysOverdue > 0) {
@@ -140,6 +150,7 @@ export class BorrowService {
   }
 
   setAll(records: BorrowRecord[]): void {
+    this._records.set(records);
     this.storage?.setItem(STORAGE_KEYS.BORROW_RECORDS, JSON.stringify(records));
   }
 }

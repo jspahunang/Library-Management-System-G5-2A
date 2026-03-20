@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { STORAGE_KEYS } from '../constants/storage-keys';
 import { getLocalStorage } from '../utils/local-storage.util';
 import type { Fine } from '../models';
@@ -13,9 +13,15 @@ export class FineService {
     return getLocalStorage();
   }
 
-  getAll(): Fine[] {
+  private _fines = signal<Fine[]>(this.load());
+
+  private load(): Fine[] {
     const raw = this.storage?.getItem(STORAGE_KEYS.FINES);
     return raw ? (JSON.parse(raw) as Fine[]) : [];
+  }
+
+  getAll(): Fine[] {
+    return this._fines();
   }
 
   getById(fineid: string): Fine | undefined {
@@ -38,19 +44,22 @@ export class FineService {
   add(fine: Fine): void {
     const list = this.getAll();
     if (list.some((f) => f.fineid === fine.fineid)) return;
-    list.push(fine);
-    this.storage?.setItem(STORAGE_KEYS.FINES, JSON.stringify(list));
+    const newList = [...list, fine];
+    this._fines.set(newList);
+    this.storage?.setItem(STORAGE_KEYS.FINES, JSON.stringify(newList));
   }
 
   markAsPaid(fineid: string): void {
-    const list = this.getAll();
+    const list = [...this.getAll()];
     const i = list.findIndex((f) => f.fineid === fineid);
     if (i === -1) return;
     list[i] = { ...list[i], paymentstatus: 'Paid', paymentdate: new Date().toISOString().slice(0, 10) };
+    this._fines.set(list);
     this.storage?.setItem(STORAGE_KEYS.FINES, JSON.stringify(list));
   }
 
   setAll(fines: Fine[]): void {
+    this._fines.set(fines);
     this.storage?.setItem(STORAGE_KEYS.FINES, JSON.stringify(fines));
   }
 }

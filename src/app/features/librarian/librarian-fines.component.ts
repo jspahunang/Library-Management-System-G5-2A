@@ -7,6 +7,7 @@ import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-librarian-fines',
@@ -32,7 +33,20 @@ export class LibrarianFinesComponent {
   ) { }
 
   markPaid(fineid: string): void {
-    this.fineService.markAsPaid(fineid);
-    this.message.set('Fine marked as paid.');
+    Swal.fire({
+      title: 'Settle Fine?',
+      text: "Mark this fine as paid?",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#4f46e5',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, settle it'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.fineService.markAsPaid(fineid);
+        this.message.set('Fine marked as paid.');
+        Swal.fire({ title: 'Settled!', text: 'Fine has been marked as paid.', icon: 'success', timer: 1500, showConfirmButton: false });
+      }
+    });
   }
 }
