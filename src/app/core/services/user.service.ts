@@ -1,23 +1,35 @@
-import { Injectable, signal } from '@angular/core';
-import { STORAGE_KEYS } from '../constants/storage-keys';
-import { getLocalStorage } from '../utils/local-storage.util';
+import { Injectable, signal, inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import {
+  Firestore,
+  collection,
+  onSnapshot,
+  doc,
+  setDoc,
+  updateDoc,
+  deleteDoc,
+  CollectionReference,
+} from '@angular/fire/firestore';
 import type { User } from '../models';
 
 /**
- * User CRUD and lookup.
- * This service is designed to be migrated to Firebase later (Firestore users collection).
+ * User CRUD and lookup backed by Firestore `users` collection.
+ * Reads are served from a live real-time signal; writes go directly to Firestore.
  */
 @Injectable({ providedIn: 'root' })
 export class UserService {
-  private get storage() {
-    return getLocalStorage();
-  }
+  private firestore = inject(Firestore);
+  private platformId = inject(PLATFORM_ID);
 
-  private _users = signal<User[]>(this.load());
+  private _users = signal<User[]>([]);
 
-  private load(): User[] {
-    const raw = this.storage?.getItem(STORAGE_KEYS.USERS);
-    return raw ? (JSON.parse(raw) as User[]) : [];
+  constructor() {
+    if (isPlatformBrowser(this.platformId)) {
+      const ref = collection(this.firestore, 'users') as CollectionReference<User>;
+      onSnapshot(ref, (snapshot) => {
+        this._users.set(snapshot.docs.map((d) => d.data() as User));
+      });
+    }
   }
 
   getAll(): User[] {
@@ -25,38 +37,25 @@ export class UserService {
   }
 
   getById(userid: string): User | undefined {
-    return this.getAll().find((u) => u.userid === userid);
+    return this._users().find((u) => u.userid === userid);
   }
 
   getByRole(role: User['role']): User[] {
-    return this.getAll().filter((u) => u.role === role);
+    return this._users().filter((u) => u.role === role);
   }
 
-  add(user: User): void {
-    const list = this.getAll();
-    if (list.some((u) => u.userid === user.userid)) return;
-    const newList = [...list, user];
-    this._users.set(newList);
-    this.storage?.setItem(STORAGE_KEYS.USERS, JSON.stringify(newList));
+  async add(user: User): Promise<void> {
+    const ref = doc(this.firestore, 'users', user.userid);
+    await setDoc(ref, user);
   }
 
-  update(userid: string, updates: Partial<User>): void {
-    const list = [...this.getAll()];
-    const i = list.findIndex((u) => u.userid === userid);
-    if (i === -1) return;
-    list[i] = { ...list[i], ...updates };
-    this._users.set(list);
-    this.storage?.setItem(STORAGE_KEYS.USERS, JSON.stringify(list));
+  async update(userid: string, updates: Partial<User>): Promise<void> {
+    const ref = doc(this.firestore, 'users', userid);
+    await updateDoc(ref, updates as Record<string, unknown>);
   }
 
-  delete(userid: string): void {
-    const newList = this.getAll().filter((u) => u.userid !== userid);
-    this._users.set(newList);
-    this.storage?.setItem(STORAGE_KEYS.USERS, JSON.stringify(newList));
-  }
-
-  setAll(users: User[]): void {
-    this._users.set(users);
-    this.storage?.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
+  async delete(userid: string): Promise<void> {
+    const ref = doc(this.firestore, 'users', userid);
+    await deleteDoc(ref);
   }
 }

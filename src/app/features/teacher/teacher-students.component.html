@@ -1,0 +1,59 @@
+<div class="page-section teacher-students">
+  <header class="teacher-students__header">
+    <h1 class="teacher-students__title">Students Information</h1>
+    <p class="teacher-students__subtitle">
+      View enrolled students and their active book borrows.
+    </p>
+  </header>
+
+  <div class="teacher-students__content card">
+    <div class="table-container">
+      <table class="students-table">
+        <thead>
+          <tr>
+            <th>Student Name</th>
+            <th>Contact Info</th>
+            <th>Year Level</th>
+            <th>Currently Borrowed Books</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of studentsData(); track item.user.userid) {
+            <tr>
+              <td>
+                <div class="font-medium">{{ item.user.Fname }} {{ item.user.Minitial }} {{ item.user.Lname }}</div>
+              </td>
+              <td>
+                <div class="text-sm">{{ item.user.email }}</div>
+                <div class="text-sm text-muted">{{ item.user.phone }}</div>
+              </td>
+              <td>
+                <div>{{ item.student?.yearLevel ? 'Year ' + item.student?.yearLevel : 'N/A' }}</div>
+              </td>
+              <td>
+                @if (item.activeBorrows.length > 0) {
+                  <ul class="borrow-list">
+                    @for (borrow of item.activeBorrows; track borrow.borrowid) {
+                      <li>
+                        <span class="book-title">{{ borrow.booktitle }}</span>
+                        <span class="book-status" [class.overdue]="borrow.status === 'Overdue'">
+                          (Due: {{ borrow.duedate }})
+                        </span>
+                      </li>
+                    }
+                  </ul>
+                } @else {
+                  <span class="text-muted">No active borrows</span>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="4" class="text-center text-muted">No students found.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

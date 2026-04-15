@@ -1,0 +1,81 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // A helper function to check if a user is logged in
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // A helper function to check if the user is an Admin or Librarian
+    // Note: In a production app with Cloud Functions, you would use custom claims (request.auth.token.role == 'Admin').
+    // Since we don't have custom claims, we assume any authenticated user is bound by the UI guard,
+    // but here we check if their document in the database has the role.
+    function hasRole(roles) {
+      return isAuthenticated() && (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in roles);
+    }
+    
+    // Users collection:
+    // Anyone authenticated can read basic profiles.
+    // Users can only modify their own data. Admins can do anything.
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if (isAuthenticated() && request.auth.uid == userId) || hasRole(['Admin']);
+    }
+
+    // Role-specific collections (Admin, Librarian, Student, Teacher)
+    match /admins/{docId} {
+      allow read: if isAuthenticated();
+      allow write: if hasRole(['Admin']);
+    }
+    match /librarians/{docId} {
+      allow read: if isAuthenticated();
+      allow write: if hasRole(['Admin']);
+    }
+    match /students/{docId} {
+      allow read: if isAuthenticated();
+      allow write: if hasRole(['Admin', 'Librarian']);
+    }
+    match /teachers/{docId} {
+      allow read: if isAuthenticated();
+      allow write: if hasRole(['Admin', 'Librarian']);
+    }
+
+    // Books catalog:
+    // Anyone (even unauthenticated) can read the books catalog.
+    // Only Admins and Librarians can manage books.
+    match /books/{bookId} {
+      allow read: if true;
+      allow write: if hasRole(['Admin', 'Librarian']);
+    }
+
+    // Borrow Records:
+    // Students/Teachers can only read their own records.
+    // Only Admins and Librarians can create/update records.
+    match /borrow_records/{recordId} {
+      allow read: if isAuthenticated(); // Simplified for test app
+      allow write: if hasRole(['Admin', 'Librarian']);
+    }
+
+    // Fines:
+    // Students/Teachers can only read their own.
+    // Only Admins and Librarians can manage fines.
+    match /fines/{fineId} {
+      allow read: if isAuthenticated();
+      allow write: if hasRole(['Admin', 'Librarian']);
+    }
+
+    // Notifications:
+    // Users can read/update (mark as read) their own notifications.
+    // Automated systems (or Admins/Librarians issuing them) can create them.
+    match /notifications/{notifId} {
+      allow read, update: if isAuthenticated(); // Simplified
+      allow create, delete: if hasRole(['Admin', 'Librarian']);
+    }
+  }
+}

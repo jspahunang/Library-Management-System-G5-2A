@@ -1,0 +1,173 @@
+:host {
+  display: block;
+}
+
+.librarian-notifications-page {
+  max-width: 52rem;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.send-card {
+  padding: 1.25rem 1.5rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+}
+
+.send-card-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 1rem;
+}
+
+.send-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.send-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.send-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.send-feedback {
+  margin: 0;
+}
+
+.list-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.list-section-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+}
+
+.filter-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.filter-input {
+  min-width: 12rem;
+  max-width: 20rem;
+}
+
+.notif-list-librarian {
+  margin-top: 0.25rem;
+}
+
+.notif-item-librarian {
+  position: relative;
+  padding: 0;
+  overflow: hidden;
+}
+
+.notif-item-indicator {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: transparent;
+  border-radius: 3px 0 0 3px;
+}
+
+.notif-item-unread .notif-item-indicator {
+  background: var(--accent);
+}
+
+.notif-item-content {
+  padding: 1rem 1rem 1rem 1.25rem;
+}
+
+.notif-item-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.375rem;
+}
+
+.notif-student-badge {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: var(--bg-card-alt);
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.25rem;
+}
+
+.notif-read-badge {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.notif-unread-badge {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.notif-item-title {
+  margin: 0;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.notif-item-body {
+  margin: 0.375rem 0 0;
+}
+
+.notif-item-time {
+  margin-top: 0.5rem;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  border-radius: 0.75rem;
+  border: 1px dashed var(--border);
+  background: var(--bg-card-alt);
+}
+
+.empty-state-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.75rem;
+  opacity: 0.7;
+}
+
+.empty-state-title {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.25rem;
+}
+
+.empty-state-text {
+  font-size: 0.9375rem;
+  color: var(--text-muted);
+  margin: 0;
+}

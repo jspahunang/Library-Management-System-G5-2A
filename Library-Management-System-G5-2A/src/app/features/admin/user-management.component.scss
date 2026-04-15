@@ -1,0 +1,324 @@
+:host {
+  display: block;
+}
+
+.user-mgmt {
+  gap: 1.5rem;
+}
+
+.user-mgmt__header {
+  margin-bottom: 0.25rem;
+}
+
+.user-mgmt__header .page-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* Toolbar bar: one clear strip for filters + action */
+.user-mgmt__toolbar-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  box-shadow: var(--shadow);
+}
+
+.user-mgmt__filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* Search: icon + input */
+.user-mgmt__search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1 1 100%;
+  min-width: 0;
+  @media (min-width: 640px) {
+    flex: 1 1 18rem;
+    max-width: 22rem;
+  }
+}
+
+.user-mgmt__search-icon {
+  position: absolute;
+  left: 0.875rem;
+  width: 1rem;
+  height: 1rem;
+  pointer-events: none;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.user-mgmt__search {
+  width: 100%;
+  height: 2.5rem;
+  padding: 0 1rem 0 2.5rem;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  &::placeholder {
+    color: var(--text-muted);
+  }
+  &:hover:not(:focus) {
+    border-color: rgba(79, 70, 229, 0.35);
+  }
+  &:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+  }
+}
+
+/* Role filter: label + select */
+.user-mgmt__role-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.user-mgmt__role-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.user-mgmt__role-select {
+  height: 2.5rem;
+  padding: 0 2rem 0 0.75rem;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  min-width: 6.5rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  &:hover {
+    border-color: rgba(79, 70, 229, 0.35);
+  }
+  &:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+  }
+}
+
+/* Add user button: primary CTA */
+.user-mgmt__action {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.user-mgmt__add-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 2.5rem;
+  padding: 0 1.25rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #fff;
+  background: var(--accent);
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(79, 70, 229, 0.3);
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  &:hover {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+  }
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.user-mgmt__add-icon {
+  font-size: 1.25rem;
+  line-height: 1;
+  font-weight: 400;
+  opacity: 0.95;
+}
+
+/* Modal: Add/Edit user */
+.user-mgmt__modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
+  animation: user-mgmt-fade-in 0.2s ease;
+}
+
+.user-mgmt__modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  overflow: auto;
+  animation: user-mgmt-fade-in 0.2s ease;
+}
+
+.user-mgmt__modal-dialog {
+  width: 100%;
+  max-width: 28rem;
+  max-height: calc(100vh - 3rem);
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  animation: user-mgmt-scale-in 0.25s ease;
+}
+
+.user-mgmt__modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-card-alt);
+  flex-shrink: 0;
+}
+
+.user-mgmt__modal-title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.user-mgmt__modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: color 0.2s ease, background 0.2s ease;
+  &:hover {
+    color: var(--text-primary);
+    background: var(--border);
+  }
+}
+
+.user-mgmt__modal-form {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+
+.user-mgmt__modal-body {
+  padding: 1.5rem;
+  overflow-y: auto;
+  flex: 1 1 auto;
+}
+
+.user-mgmt__modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--border);
+  background: var(--bg-card-alt);
+  flex-shrink: 0;
+}
+
+@keyframes user-mgmt-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes user-mgmt-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Table section */
+.user-mgmt__table-section {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.user-mgmt__table-meta {
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  background-color: var(--bg-card-alt);
+  flex-shrink: 0;
+}
+
+.user-mgmt__count {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.user-mgmt__table-section .table-wrap {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.user-mgmt__table-section .data-table {
+  table-layout: auto;
+}
+
+.user-mgmt__table-section .data-table th:nth-child(1),
+.user-mgmt__table-section .data-table td:nth-child(1) {
+  min-width: 8rem;
+}
+
+.user-mgmt__table-section .data-table th:nth-child(2),
+.user-mgmt__table-section .data-table td:nth-child(2) {
+  min-width: 10rem;
+}
+
+.user-mgmt__table-section .data-table .cell-actions {
+  white-space: nowrap;
+}

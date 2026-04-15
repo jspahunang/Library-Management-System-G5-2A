@@ -10,6 +10,12 @@ import Aura from '@primeuix/themes/aura';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { MessageService } from 'primeng/api';
 
+import { environment } from '../environments/environment';
+import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
+import { getAnalytics, provideAnalytics } from '@angular/fire/analytics';
+import { getFirestore, provideFirestore } from '@angular/fire/firestore';
+import { getAuth, provideAuth } from '@angular/fire/auth';
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
@@ -22,6 +28,10 @@ export const appConfig: ApplicationConfig = {
       theme: {
         preset: Aura
       }
-    })
+    }),
+    provideFirebaseApp(() => initializeApp(environment.firebase)),
+    provideAnalytics(() => getAnalytics()),
+    provideFirestore(() => getFirestore()),
+    provideAuth(() => getAuth()),
   ],
 };

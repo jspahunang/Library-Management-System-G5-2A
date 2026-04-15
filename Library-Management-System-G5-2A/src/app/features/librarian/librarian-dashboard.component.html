@@ -1,0 +1,71 @@
+<div class="page-section">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h2 class="page-title" style="margin-bottom: 0;">Dashboard</h2>
+    <p-button (onClick)="downloadMonthlyReport()" icon="pi pi-download" label="Download Monthly Report"></p-button>
+  </div>
+
+  <div class="grid-cards">
+    <div class="stat-card">
+      <p class="stat-label">Total borrowed (active)</p>
+      <p class="stat-value">{{ borrowedCount() }}</p>
+      <a [routerLink]="['/librarian', 'transactions']" class="btn btn-primary stat-card-action">View transactions</a>
+    </div>
+    <div class="stat-card">
+      <p class="stat-label">Overdue books</p>
+      <p class="stat-value stat-value-warning">{{ overdueCount() }}</p>
+      <a [routerLink]="['/librarian', 'transactions']" class="btn btn-primary stat-card-action">View transactions</a>
+    </div>
+    <div class="stat-card">
+      <p class="stat-label">Total fines (unpaid)</p>
+      <p class="stat-value">₱{{ totalFinesUnpaid() }}</p>
+      <a [routerLink]="['/librarian', 'fines']" class="btn btn-primary stat-card-action">Manage fines</a>
+    </div>
+    <div class="stat-card">
+      <p class="stat-label">Total books (catalog)</p>
+      <p class="stat-value">{{ totalBooks() }}</p>
+      <a [routerLink]="['/librarian', 'books']" class="btn btn-primary stat-card-action">Manage books</a>
+    </div>
+  </div>
+
+  <div class="card-lg mb-8">
+    <div class="card-header">
+      <h3 class="card-title">System Overview Chart</h3>
+    </div>
+    <div class="p-6">
+      <p-chart type="bar" [data]="chartData()"></p-chart>
+    </div>
+  </div>
+
+  <div class="card-lg">
+    <div class="card-header">
+      <h3 class="card-title">Overdue borrows</h3>
+    </div>
+    <div class="table-wrap">
+      <p-table [value]="overdueRecords()" styleClass="p-datatable-striped">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Book</th>
+            <th>Student ID</th>
+            <th>Due date</th>
+            <th>Status</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-r>
+          <tr>
+            <td class="text-primary">{{ r.booktitle }}</td>
+            <td>{{ r.studentid }}</td>
+            <td>{{ r.duedate }}</td>
+            <td>
+              <app-status-badge [status]="r.status" type="borrow" />
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="4" class="empty-cell">No overdue borrows.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>

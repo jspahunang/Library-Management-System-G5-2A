@@ -25,10 +25,9 @@ export class LoginComponent implements OnInit {
   message = '';
   loading = false;
 
-  ngOnInit(): void {
-    // Ensure users and logins are in LocalStorage when login page is shown (fixes SSR / timing)
-    this.seed.seedLoginData();
-    this.seed.seedIfEmpty();
+  async ngOnInit(): Promise<void> {
+    // Seed initial Firestore data + Create Mock Auth Accounts
+    await this.seed.seedIfEmpty();
   }
 
   form = this.fb.nonNullable.group({
@@ -36,7 +35,7 @@ export class LoginComponent implements OnInit {
     password: ['', [Validators.required, Validators.minLength(6)]],
   });
 
-  onSubmit(): void {
+  async onSubmit(): Promise<void> {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
@@ -44,16 +43,26 @@ export class LoginComponent implements OnInit {
     this.loading = true;
     this.message = '';
     const { email, password } = this.form.getRawValue();
-    const result = this.auth.login(email, password);
+    
+    const result = await this.auth.login(email, password);
     this.loading = false;
+    
     if (result.success) {
-      const session = this.auth.currentSession();
-      if (session) {
-        this.router.navigate([`/${session.role.toLowerCase()}`]);
-      }
+      // The session may take a small moment to arrive from the auth state change listener.
+      // Easiest is to wait briefly or let the auth guard handle routing if configured. 
+      // For now, we'll wait a tick.
+      setTimeout(() => {
+         const session = this.auth.currentSession();
+         if (session) {
+           this.router.navigate([`/${session.role.toLowerCase()}`]);
+         } else {
+           // Fallback if session isn't loaded instantly
+           this.router.navigate(['/']);
+         }
+      }, 500);
+      
     } else {
       this.message = result.message;
     }
   }
-
 }

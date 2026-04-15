@@ -1,0 +1,32 @@
+<div class="page-section teacher-dashboard">
+  <header class="teacher-dashboard__header">
+    <h1 class="teacher-dashboard__title">Teacher Dashboard</h1>
+    <p class="teacher-dashboard__subtitle">
+      Browse the book catalog and manage your borrow history in one place.
+    </p>
+  </header>
+
+  <div class="teacher-dashboard__actions">
+    <a [routerLink]="['/teacher', 'catalog']" class="action-card action-card--catalog">
+      <span class="action-card__icon" aria-hidden="true">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+        </svg>
+      </span>
+      <h2 class="action-card__title">Book Catalog</h2>
+      <p class="action-card__desc">Search and browse available books, then borrow titles you need for teaching.</p>
+      <span class="action-card__cta btn btn-primary">Browse catalog</span>
+    </a>
+
+    <a [routerLink]="['/teacher', 'history']" class="action-card action-card--history">
+      <span class="action-card__icon" aria-hidden="true">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </span>
+      <h2 class="action-card__title">Borrow History</h2>
+      <p class="action-card__desc">View your past and current borrows, due dates, and return status.</p>
+      <span class="action-card__cta btn btn-secondary">View history</span>
+    </a>
+  </div>
+</div>

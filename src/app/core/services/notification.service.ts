@@ -1,23 +1,33 @@
-import { Injectable, signal } from '@angular/core';
-import { STORAGE_KEYS } from '../constants/storage-keys';
-import { getLocalStorage } from '../utils/local-storage.util';
+import { Injectable, signal, inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import {
+  Firestore,
+  collection,
+  onSnapshot,
+  doc,
+  setDoc,
+  updateDoc,
+  CollectionReference,
+} from '@angular/fire/firestore';
 import type { Notification } from '../models';
 
 /**
- * Notifications for students (borrow, due reminder, overdue, fine issued).
- * This service is designed to be migrated to Firebase later (Firestore notifications + FCM optional).
+ * Notifications for students backed by Firestore `notifications` collection.
  */
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
-  private get storage() {
-    return getLocalStorage();
-  }
+  private firestore = inject(Firestore);
+  private platformId = inject(PLATFORM_ID);
 
-  private _notifications = signal<Notification[]>(this.load());
+  private _notifications = signal<Notification[]>([]);
 
-  private load(): Notification[] {
-    const raw = this.storage?.getItem(STORAGE_KEYS.NOTIFICATIONS);
-    return raw ? (JSON.parse(raw) as Notification[]) : [];
+  constructor() {
+    if (isPlatformBrowser(this.platformId)) {
+      const ref = collection(this.firestore, 'notifications') as CollectionReference<Notification>;
+      onSnapshot(ref, (snapshot) => {
+        this._notifications.set(snapshot.docs.map((d) => d.data() as Notification));
+      });
+    }
   }
 
   getAll(): Notification[] {
@@ -25,7 +35,7 @@ export class NotificationService {
   }
 
   getByStudent(studentid: string): Notification[] {
-    return this.getAll()
+    return this._notifications()
       .filter((n) => n.studentid === studentid)
       .sort((a, b) => (b.timestamp > a.timestamp ? 1 : -1));
   }
@@ -34,37 +44,22 @@ export class NotificationService {
     return this.getByStudent(studentid).filter((n) => !n.read).length;
   }
 
-  add(notification: Omit<Notification, 'notificationid' | 'read'>): void {
-    const n: Notification = {
-      ...notification,
-      notificationid: `notif-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
-      read: false,
-    };
-    const list = [...this.getAll(), n];
-    this._notifications.set(list);
-    this.storage?.setItem(STORAGE_KEYS.NOTIFICATIONS, JSON.stringify(list));
+  async add(notification: Omit<Notification, 'notificationid' | 'read'>): Promise<void> {
+    const id = `notif-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+    const n: Notification = { ...notification, notificationid: id, read: false };
+    const ref = doc(this.firestore, 'notifications', id);
+    await setDoc(ref, n);
   }
 
-  markAsRead(notificationid: string): void {
-    const list = [...this.getAll()];
-    const i = list.findIndex((n) => n.notificationid === notificationid);
-    if (i === -1) return;
-    list[i] = { ...list[i], read: true };
-    this._notifications.set(list);
-    this.storage?.setItem(STORAGE_KEYS.NOTIFICATIONS, JSON.stringify(list));
+  async markAsRead(notificationid: string): Promise<void> {
+    const ref = doc(this.firestore, 'notifications', notificationid);
+    await updateDoc(ref, { read: true });
   }
 
-  markAllAsRead(studentid: string): void {
-    const list = [...this.getAll()];
-    for (let i = 0; i < list.length; i++) {
-      if (list[i].studentid === studentid && !list[i].read) list[i] = { ...list[i], read: true };
-    }
-    this._notifications.set(list);
-    this.storage?.setItem(STORAGE_KEYS.NOTIFICATIONS, JSON.stringify(list));
-  }
-
-  setAll(notifications: Notification[]): void {
-    this._notifications.set(notifications);
-    this.storage?.setItem(STORAGE_KEYS.NOTIFICATIONS, JSON.stringify(notifications));
+  async markAllAsRead(studentid: string): Promise<void> {
+    const unread = this.getByStudent(studentid).filter((n) => !n.read);
+    await Promise.all(
+      unread.map((n) => updateDoc(doc(this.firestore, 'notifications', n.notificationid), { read: true }))
+    );
   }
 }

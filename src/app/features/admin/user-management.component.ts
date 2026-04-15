@@ -84,7 +84,7 @@ export class UserManagementComponent {
     this.editingId.set(null);
   }
 
-  save(): void {
+  async save(): Promise<void> {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
@@ -92,11 +92,11 @@ export class UserManagementComponent {
     const v = this.form.getRawValue();
     const id = this.editingId();
     if (id) {
-      this.userService.update(id, { ...v });
+      await this.userService.update(id, { ...v });
       Swal.fire({ title: 'Updated!', text: 'User details have been successfully updated.', icon: 'success', timer: 1500, showConfirmButton: false });
     } else {
       const userid = `u-${Date.now()}`;
-      this.userService.add({
+      await this.userService.add({
         userid,
         Fname: v.Fname,
         Minitial: v.Minitial ?? '',
@@ -106,10 +106,9 @@ export class UserManagementComponent {
         status: v.status,
         role: v.role,
       });
-      this.loginService.setAll([
-        ...this.loginService.getAll(),
-        { userid, email: v.email, password: 'password123' },
-      ]);
+      // Note: In Firebase, generating an actual authentication account requires either calling 
+      // createUserWithEmailAndPassword (which signs the admin out) or using a Firebase Admin SDK
+      // backend Cloud Function. The profile is saved to Firestore, but the Auth account must be handled separately.
       Swal.fire({ title: 'Added!', text: 'New user has been successfully created.', icon: 'success', timer: 1500, showConfirmButton: false });
     }
     this.cancelForm();
@@ -124,9 +123,9 @@ export class UserManagementComponent {
       confirmButtonColor: '#4f46e5',
       cancelButtonColor: '#d33',
       confirmButtonText: 'Yes, delete it!'
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        this.userService.delete(userid);
+        await this.userService.delete(userid);
         Swal.fire({
           title: 'Deleted!',
           text: 'The user has been removed.',

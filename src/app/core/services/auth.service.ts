@@ -1,8 +1,15 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject, PLATFORM_ID } from '@angular/core';
 import { Router } from '@angular/router';
-import { STORAGE_KEYS } from '../constants/storage-keys';
-import { getLocalStorage } from '../utils/local-storage.util';
-import { UserService } from './user.service';
+import { isPlatformBrowser } from '@angular/common';
+import { Auth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from '@angular/fire/auth';
+import {
+  Firestore,
+  collection,
+  query,
+  where,
+  getDocs,
+  CollectionReference,
+} from '@angular/fire/firestore';
 import type { User, UserRole } from '../models';
 
 export interface Session {
@@ -13,81 +20,84 @@ export interface Session {
 }
 
 /**
- * Authentication and session management.
- * This service is designed to be migrated to Firebase later (Firebase Auth + Firestore user profile).
+ * Authentication and session management via Firebase Auth + Firestore user profiles.
  */
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private get storage() {
-    return getLocalStorage();
-  }
+  private platformId = inject(PLATFORM_ID);
+  private auth = inject(Auth);
+  private firestore = inject(Firestore);
+  private router = inject(Router);
 
-  private sessionSignal = signal<Session | null>(this.loadSessionFromStorage());
+  private sessionSignal = signal<Session | null>(null);
 
   currentSession = computed(() => this.sessionSignal());
   isLoggedIn = computed(() => this.sessionSignal() !== null);
+
+  constructor() {
+    if (isPlatformBrowser(this.platformId)) {
+      // Restore session automatically from Firebase Auth state on page load
+      onAuthStateChanged(this.auth, async (firebaseUser) => {
+        if (firebaseUser?.email) {
+          const usersRef = collection(this.firestore, 'users') as CollectionReference<User>;
+          const q = query(usersRef, where('email', '==', firebaseUser.email));
+          const snapshot = await getDocs(q);
+          if (!snapshot.empty) {
+            const userData = snapshot.docs[0].data() as User;
+            if (userData.status === 'Active') {
+              const fullName = [userData.Fname, userData.Minitial, userData.Lname]
+                .filter(Boolean)
+                .join(' ');
+              this.sessionSignal.set({
+                userid: userData.userid,
+                role: userData.role,
+                email: userData.email,
+                fullName,
+              });
+            } else {
+              // Account is inactive — sign out immediately
+              await signOut(this.auth);
+              this.sessionSignal.set(null);
+            }
+          }
+        } else {
+          this.sessionSignal.set(null);
+        }
+      });
+    }
+  }
 
   /** Use in route guards to get current auth state. */
   isAuthenticated(): boolean {
     return this.sessionSignal() !== null;
   }
 
-  constructor(
-    private userService: UserService,
-    private router: Router
-  ) {}
-
-  private loadSessionFromStorage(): Session | null {
-    const raw = this.storage?.getItem(STORAGE_KEYS.SESSION);
-    if (!raw) return null;
-    try {
-      return JSON.parse(raw) as Session;
-    } catch {
-      return null;
-    }
-  }
-
-  private persistSession(session: Session | null): void {
-    if (session) {
-      this.storage?.setItem(STORAGE_KEYS.SESSION, JSON.stringify(session));
-    } else {
-      this.storage?.removeItem(STORAGE_KEYS.SESSION);
-    }
-    this.sessionSignal.set(session);
-  }
-
-  login(email: string, password: string): { success: boolean; message: string } {
+  /** Sign in with Firebase Auth and load user profile from Firestore. */
+  async login(email: string, password: string): Promise<{ success: boolean; message: string }> {
     const e = email?.trim() ?? '';
     const p = password?.trim() ?? '';
-    const loginsRaw = this.storage?.getItem(STORAGE_KEYS.LOGINS);
-    const logins = loginsRaw ? (JSON.parse(loginsRaw) as { userid: string; email: string; password: string }[]) : [];
-    const cred = logins.find((l) => l.email.toLowerCase() === e.toLowerCase() && l.password === p);
-    if (!cred) {
-      return { success: false, message: 'Invalid email or password.' };
+    try {
+      await signInWithEmailAndPassword(this.auth, e, p);
+      // onAuthStateChanged will automatically set the session signal
+      return { success: true, message: 'Login successful.' };
+    } catch (err: any) {
+      const code: string = err?.code ?? '';
+      if (
+        code === 'auth/invalid-credential' ||
+        code === 'auth/wrong-password' ||
+        code === 'auth/user-not-found' ||
+        code === 'auth/invalid-email'
+      ) {
+        return { success: false, message: 'Invalid email or password.' };
+      }
+      return { success: false, message: 'Login failed. Please try again.' };
     }
-    const user = this.userService.getById(cred.userid);
-    if (!user || user.status !== 'Active') {
-      return { success: false, message: 'Account is inactive or not found.' };
-    }
-    const fullName = [user.Fname, user.Minitial, user.Lname].filter(Boolean).join(' ');
-    const session: Session = {
-      userid: user.userid,
-      role: user.role,
-      email: user.email,
-      fullName,
-    };
-    this.persistSession(session);
-    return { success: true, message: 'Login successful.' };
   }
 
-  logout(): void {
-    this.persistSession(null);
+  async logout(): Promise<void> {
+    await signOut(this.auth);
+    this.sessionSignal.set(null);
     this.router.navigate(['/login']);
-  }
-
-  getCurrentUser(): User | undefined {
-    const session = this.sessionSignal();
-    return session ? this.userService.getById(session.userid) : undefined;
   }
 
   hasRole(role: UserRole): boolean {

@@ -44,6 +44,7 @@ export function getNavItemsForRole(role: UserRole): NavItem[] {
         { label: 'Dashboard', route: base, icon: iconHome },
         { label: 'Book Catalog', route: `${base}/catalog`, icon: iconBook },
         { label: 'Borrow History', route: `${base}/history`, icon: iconBorrow },
+        { label: 'Students Info', route: `${base}/students`, icon: iconUsers },
       ];
     default:
       return [];

@@ -43,14 +43,14 @@ export class TransactionsComponent {
     private roleService: RoleService
   ) { }
 
-  doBorrow(): void {
+  async doBorrow(): Promise<void> {
     const sid = this.selectedStudentId();
     const bid = this.selectedBookId();
     if (!sid || !bid) {
       this.message.set('Select student and book.');
       return;
     }
-    const result = this.borrowService.borrow(bid, sid);
+    const result = await this.borrowService.borrow(bid, sid);
     this.message.set(result.message);
     if (result.success) {
       this.selectedBookId.set('');
@@ -60,8 +60,8 @@ export class TransactionsComponent {
     }
   }
 
-  doReturn(borrowid: string): void {
-    const result = this.borrowService.return(borrowid);
+  async doReturn(borrowid: string): Promise<void> {
+    const result = await this.borrowService.return(borrowid);
     this.message.set(result.message);
     if (result.success) {
       Swal.fire({ title: 'Returned!', text: result.message, icon: 'success', timer: 1500, showConfirmButton: false });

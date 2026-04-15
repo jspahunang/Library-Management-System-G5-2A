@@ -39,13 +39,13 @@ export class CatalogComponent {
     this.searchQuery.set(value);
   }
 
-  borrow(bookId: string): void {
+  async borrow(bookId: string): Promise<void> {
     const sid = this.studentId();
     if (!sid) {
       this.message.set('Not logged in as student.');
       return;
     }
-    const result = this.borrowService.borrow(bookId, sid);
+    const result = await this.borrowService.borrow(bookId, sid);
     this.message.set(result.message);
   }
 }

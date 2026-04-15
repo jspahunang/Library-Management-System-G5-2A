@@ -1,23 +1,34 @@
-import { Injectable, signal } from '@angular/core';
-import { STORAGE_KEYS } from '../constants/storage-keys';
-import { getLocalStorage } from '../utils/local-storage.util';
+import { Injectable, signal, inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import {
+  Firestore,
+  collection,
+  onSnapshot,
+  doc,
+  setDoc,
+  updateDoc,
+  deleteDoc,
+  CollectionReference,
+} from '@angular/fire/firestore';
 import type { Book } from '../models';
 
 /**
- * Book CRUD and catalog.
- * This service is designed to be migrated to Firebase later (Firestore books collection).
+ * Book CRUD and catalog backed by Firestore `books` collection.
  */
 @Injectable({ providedIn: 'root' })
 export class BookService {
-  private get storage() {
-    return getLocalStorage();
-  }
+  private firestore = inject(Firestore);
+  private platformId = inject(PLATFORM_ID);
 
-  private _books = signal<Book[]>(this.load());
+  private _books = signal<Book[]>([]);
 
-  private load(): Book[] {
-    const raw = this.storage?.getItem(STORAGE_KEYS.BOOKS);
-    return raw ? (JSON.parse(raw) as Book[]) : [];
+  constructor() {
+    if (isPlatformBrowser(this.platformId)) {
+      const ref = collection(this.firestore, 'books') as CollectionReference<Book>;
+      onSnapshot(ref, (snapshot) => {
+        this._books.set(snapshot.docs.map((d) => d.data() as Book));
+      });
+    }
   }
 
   getAll(): Book[] {
@@ -25,17 +36,17 @@ export class BookService {
   }
 
   getById(bookid: string): Book | undefined {
-    return this.getAll().find((b) => b.bookid === bookid);
+    return this._books().find((b) => b.bookid === bookid);
   }
 
   getByCategory(category: string): Book[] {
-    return this.getAll().filter((b) => b.category === category);
+    return this._books().filter((b) => b.category === category);
   }
 
   search(query: string): Book[] {
     const q = (query || '').toLowerCase().trim();
     if (!q) return this.getAll();
-    return this.getAll().filter(
+    return this._books().filter(
       (b) =>
         (b.booktitle ?? '').toLowerCase().includes(q) ||
         (b.author ?? '').toLowerCase().includes(q) ||
@@ -44,49 +55,36 @@ export class BookService {
     );
   }
 
-  add(book: Book): void {
-    const list = this.getAll();
-    if (list.some((b) => b.bookid === book.bookid)) return;
-    const newList = [...list, book];
-    this._books.set(newList);
-    this.storage?.setItem(STORAGE_KEYS.BOOKS, JSON.stringify(newList));
+  async add(book: Book): Promise<void> {
+    const ref = doc(this.firestore, 'books', book.bookid);
+    await setDoc(ref, book);
   }
 
-  update(bookid: string, updates: Partial<Book>): void {
-    const list = [...this.getAll()];
-    const i = list.findIndex((b) => b.bookid === bookid);
-    if (i === -1) return;
-    list[i] = { ...list[i], ...updates };
-    this._books.set(list);
-    this.storage?.setItem(STORAGE_KEYS.BOOKS, JSON.stringify(list));
+  async update(bookid: string, updates: Partial<Book>): Promise<void> {
+    const ref = doc(this.firestore, 'books', bookid);
+    await updateDoc(ref, updates as Record<string, unknown>);
   }
 
-  delete(bookid: string): void {
-    const newList = this.getAll().filter((b) => b.bookid !== bookid);
-    this._books.set(newList);
-    this.storage?.setItem(STORAGE_KEYS.BOOKS, JSON.stringify(newList));
+  async delete(bookid: string): Promise<void> {
+    const ref = doc(this.firestore, 'books', bookid);
+    await deleteDoc(ref);
   }
 
-  decreaseAvailableCopies(bookid: string, by = 1): void {
+  async decreaseAvailableCopies(bookid: string, by = 1): Promise<void> {
     const book = this.getById(bookid);
     if (!book || book.availableCopies < by) return;
-    this.update(bookid, {
+    await this.update(bookid, {
       availableCopies: book.availableCopies - by,
       status: book.availableCopies - by === 0 ? 'Borrowed Out' : book.status,
     });
   }
 
-  increaseAvailableCopies(bookid: string, by = 1): void {
+  async increaseAvailableCopies(bookid: string, by = 1): Promise<void> {
     const book = this.getById(bookid);
     if (!book) return;
-    this.update(bookid, {
+    await this.update(bookid, {
       availableCopies: Math.min(book.availableCopies + by, book.totalCopies),
       status: 'Available',
     });
-  }
-
-  setAll(books: Book[]): void {
-    this._books.set(books);
-    this.storage?.setItem(STORAGE_KEYS.BOOKS, JSON.stringify(books));
   }
 }

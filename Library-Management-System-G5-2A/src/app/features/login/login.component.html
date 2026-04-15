@@ -1,0 +1,43 @@
+<div class="login-page">
+  <div class="login-card">
+    <div class="login-box">
+      <div class="login-heading">
+        <h1 class="login-title">Library Management System</h1>
+        <p class="login-subtitle">Sign in to your account</p>
+      </div>
+
+      @if (message) {
+      <p-message severity="error" [text]="message" styleClass="w-full mb-4" />
+      }
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="login-form">
+        <div class="form-group">
+          <label for="email" class="form-label">Email</label>
+          <input id="email" type="email" pInputText formControlName="email" autocomplete="email" class="w-full"
+            placeholder="you@example.com" />
+          @if (form.get('email')?.invalid && form.get('email')?.touched) {
+          <small class="p-error block mt-1">Valid email is required.</small>
+          }
+        </div>
+        <div class="form-group">
+          <label for="password" class="form-label">Password</label>
+          <p-password id="password" formControlName="password" [toggleMask]="true" [feedback]="false"
+            autocomplete="current-password" styleClass="w-full" inputStyleClass="w-full"
+            placeholder="••••••••"></p-password>
+          @if (form.get('password')?.invalid && form.get('password')?.touched) {
+          <small class="p-error block mt-1">Password (min 6 characters) is required.</small>
+          }
+        </div>
+        <p-button type="submit" [disabled]="loading" [label]="loading ? 'Signing in...' : 'Sign in'" styleClass="w-full"
+          [style]="{'padding': '0.625rem'}"></p-button>
+        <p class="forgot-link-wrap">
+          <a routerLink="/reset-password" class="auth-nav-link">Forgot password?</a>
+        </p>
+      </form>
+
+      <p class="login-footer">
+        <a routerLink="/demo-credentials" class="auth-nav-link">Demo credentials</a>
+      </p>
+    </div>
+  </div>
+</div>

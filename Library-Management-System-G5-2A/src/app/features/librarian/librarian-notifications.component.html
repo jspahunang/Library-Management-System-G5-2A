@@ -1,0 +1,86 @@
+<div class="page-section librarian-notifications-page">
+  <h2 class="page-title">Notifications</h2>
+
+  <section class="send-card card">
+    <h3 class="send-card-title">Send notification to student</h3>
+    <div class="send-form">
+      <label class="send-label">Student</label>
+      <select
+        class="input input-sm"
+        [value]="sendForm().studentid"
+        (change)="setSendField('studentid', $any($event.target).value)"
+      >
+        <option value="">Select student</option>
+        @for (s of students(); track s.studentid) {
+          <option [value]="s.studentid">{{ s.studentid }}</option>
+        }
+      </select>
+      <label class="send-label">Title</label>
+      <input
+        type="text"
+        placeholder="Notification title"
+        class="input input-sm"
+        [value]="sendForm().messageTitle"
+        (input)="setSendField('messageTitle', $any($event.target).value)"
+      />
+      <label class="send-label">Message</label>
+      <textarea
+        placeholder="Write your message..."
+        rows="3"
+        class="input input-sm"
+        [value]="sendForm().message"
+        (input)="setSendField('message', $any($event.target).value)"
+      ></textarea>
+      <div class="send-actions">
+        <button type="button" (click)="sendNotification()" class="btn btn-primary">
+          Send notification
+        </button>
+        @if (sendMessage()) {
+          <p class="send-feedback alert-success-inline">{{ sendMessage() }}</p>
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="list-section">
+    <div class="list-section-header">
+      <label class="filter-label">Filter by student ID</label>
+      <input
+        type="text"
+        placeholder="Search student ID..."
+        class="input input-sm filter-input"
+        [value]="searchStudentId()"
+        (input)="searchStudentId.set($any($event.target).value)"
+      />
+    </div>
+
+    <div class="notif-list notif-list-librarian">
+      @for (n of filtered(); track n.notificationid) {
+        <article class="notif-item notif-item-librarian" [class.notif-item-unread]="!n.read">
+          <div class="notif-item-indicator" aria-hidden="true"></div>
+          <div class="notif-item-content">
+            <div class="notif-item-meta">
+              <span class="notif-student-badge">Student {{ n.studentid }}</span>
+              @if (n.read) {
+                <span class="notif-read-badge">Read</span>
+              } @else {
+                <span class="notif-unread-badge">Unread</span>
+              }
+            </div>
+            <h3 class="notif-item-title">{{ n.messageTitle }}</h3>
+            <p class="notif-item-body">{{ n.message }}</p>
+            <time class="notif-item-time" [attr.datetime]="n.timestamp">
+              {{ n.timestamp | date:'medium' }}
+            </time>
+          </div>
+        </article>
+      } @empty {
+        <div class="empty-state">
+          <div class="empty-state-icon" aria-hidden="true">📬</div>
+          <p class="empty-state-title">No notifications</p>
+          <p class="empty-state-text">Send a notification above or wait for borrow/return activity.</p>
+        </div>
+      }
+    </div>
+  </section>
+</div>
