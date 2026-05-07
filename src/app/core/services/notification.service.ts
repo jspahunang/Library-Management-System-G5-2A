@@ -52,12 +52,20 @@ export class NotificationService {
   }
 
   async markAsRead(notificationid: string): Promise<void> {
+    // Optimistically update the UI
+    this._notifications.update(list =>
+      list.map(n => n.notificationid === notificationid ? { ...n, read: true } : n)
+    );
     const ref = doc(this.firestore, 'notifications', notificationid);
     await updateDoc(ref, { read: true });
   }
 
   async markAllAsRead(studentid: string): Promise<void> {
     const unread = this.getByStudent(studentid).filter((n) => !n.read);
+    // Optimistically update the UI
+    this._notifications.update(list =>
+      list.map(n => n.studentid === studentid ? { ...n, read: true } : n)
+    );
     await Promise.all(
       unread.map((n) => updateDoc(doc(this.firestore, 'notifications', n.notificationid), { read: true }))
     );

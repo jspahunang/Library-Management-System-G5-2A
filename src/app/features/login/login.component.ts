@@ -26,8 +26,8 @@ export class LoginComponent implements OnInit {
   loading = false;
 
   async ngOnInit(): Promise<void> {
-    // Seed initial Firestore data + Create Mock Auth Accounts
-    await this.seed.seedIfEmpty();
+    // Auto-seeding removed to improve loading speed
+    // and prevent data restore loops when mock users are deleted.
   }
 
   form = this.fb.nonNullable.group({

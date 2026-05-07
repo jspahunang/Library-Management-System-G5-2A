@@ -14,6 +14,6 @@ export class App {
   private theme = inject(ThemeService);
 
   constructor() {
-    this.seed.seedIfEmpty();
+    // Removed auto-seeding to prevent data restore issues
   }
 }

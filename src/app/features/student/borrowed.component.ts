@@ -23,7 +23,9 @@ export class BorrowedComponent {
 
   records = computed(() => {
     const sid = this.studentId();
-    return sid ? this.borrowService.getByStudent(sid) : [];
+    if (!sid) return [];
+    return this.borrowService.getByStudent(sid)
+      .sort((a, b) => new Date(b.borrowdate).getTime() - new Date(a.borrowdate).getTime());
   });
 
   activeCount = computed(() =>

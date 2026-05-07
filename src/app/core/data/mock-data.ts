@@ -51,8 +51,8 @@ export const MOCK_BORROW_RECORDS: BorrowRecord[] = [
 
 /** Mock fines */
 export const MOCK_FINES: Fine[] = [
-  { fineid: 'f1', studentid: 's1', borrowid: 'br2', fineamount: 70, paymentstatus: 'Paid', daysOverdue: 7, paymentdate: '2025-02-11' },
-  { fineid: 'f2', studentid: 's1', borrowid: 'br1', fineamount: 60, paymentstatus: 'Unpaid', daysOverdue: 6, paymentdate: null },
+  { fineid: 'f1', studentid: 's1', borrowid: 'br2', fineamount: 140, paymentstatus: 'Paid', daysOverdue: 7, paymentdate: '2025-02-11' },
+  { fineid: 'f2', studentid: 's1', borrowid: 'br1', fineamount: 280, paymentstatus: 'Unpaid', daysOverdue: 14, paymentdate: null },
 ];
 
 /** Mock notifications */

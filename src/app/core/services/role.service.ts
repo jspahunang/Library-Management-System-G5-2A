@@ -53,6 +53,18 @@ export class RoleService {
     return this._students().find((s) => s.studentid === studentid);
   }
 
+  getTeacherByUserId(userid: string): Teacher | undefined {
+    return this._teachers().find((t) => t.userid === userid);
+  }
+
+  getLibrarianByUserId(userid: string): Librarian | undefined {
+    return this._librarians().find((l) => l.userid === userid);
+  }
+
+  getAdminByUserId(userid: string): Admin | undefined {
+    return this._admins().find((a) => a.userid === userid);
+  }
+
   async addStudent(student: Student): Promise<void> {
     await setDoc(doc(this.firestore, 'students', student.studentid), student);
   }

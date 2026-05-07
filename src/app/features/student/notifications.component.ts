@@ -4,6 +4,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { RoleService } from '../../core/services/role.service';
 import { ButtonModule } from 'primeng/button';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-notifications',
@@ -34,12 +35,30 @@ export class NotificationsComponent {
     private notificationService: NotificationService
   ) { }
 
-  markAsRead(id: string): void {
-    this.notificationService.markAsRead(id);
+  async markAsRead(id: string): Promise<void> {
+    await this.notificationService.markAsRead(id);
+    Swal.fire({
+      toast: true,
+      position: 'top-end',
+      icon: 'success',
+      title: 'Notification marked as read',
+      showConfirmButton: false,
+      timer: 2000
+    });
   }
 
-  markAllRead(): void {
+  async markAllRead(): Promise<void> {
     const sid = this.studentId();
-    if (sid) this.notificationService.markAllAsRead(sid);
+    if (sid) {
+      await this.notificationService.markAllAsRead(sid);
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'success',
+        title: 'All notifications marked as read',
+        showConfirmButton: false,
+        timer: 2000
+      });
+    }
   }
 }

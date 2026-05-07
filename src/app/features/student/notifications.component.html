@@ -7,7 +7,7 @@
       }
     </div>
     @if (unreadCount() > 0) {
-    <p-button (onClick)="markAllRead()" label="Mark all as read" [text]="true" size="small"></p-button>
+    <p-button (click)="markAllRead()" label="Mark all as read" [text]="true" size="small"></p-button>
     }
   </header>
 
@@ -19,7 +19,7 @@
         <div class="notif-item-head">
           <h3 class="notif-item-title">{{ n.messageTitle }}</h3>
           @if (!n.read) {
-          <p-button (onClick)="markAsRead(n.notificationid)" label="Mark read" [text]="true" size="small"></p-button>
+          <p-button (click)="markAsRead(n.notificationid)" label="Mark read" [text]="true" size="small"></p-button>
           }
         </div>
         <p class="notif-item-body">{{ n.message }}</p>

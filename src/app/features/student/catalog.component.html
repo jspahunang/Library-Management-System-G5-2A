@@ -28,9 +28,9 @@
       <p class="book-card-meta">{{ book.author }}</p>
       <p class="book-card-meta-sm">{{ book.category }} · ISBN {{ book.isbn }}</p>
       <p class="book-card-meta">Available: {{ book.availableCopies }} / {{ book.totalCopies }}</p>
-      @if (book.availableCopies > 0 && studentId()) {
+      @if (book.availableCopies > 0 && userIdForBorrow()) {
       <div class="book-card-actions mt-4">
-        <p-button (onClick)="borrow(book.bookid)" label="Borrow" styleClass="w-full"></p-button>
+        <p-button (click)="borrow(book.bookid)" label="Borrow" styleClass="w-full"></p-button>
       </div>
       }
     </div>

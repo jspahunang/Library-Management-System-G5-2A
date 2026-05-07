@@ -91,27 +91,38 @@ export class UserManagementComponent {
     }
     const v = this.form.getRawValue();
     const id = this.editingId();
-    if (id) {
-      await this.userService.update(id, { ...v });
-      Swal.fire({ title: 'Updated!', text: 'User details have been successfully updated.', icon: 'success', timer: 1500, showConfirmButton: false });
-    } else {
-      const userid = `u-${Date.now()}`;
-      await this.userService.add({
-        userid,
-        Fname: v.Fname,
-        Minitial: v.Minitial ?? '',
-        Lname: v.Lname,
-        email: v.email,
-        phone: v.phone ?? '',
-        status: v.status,
-        role: v.role,
-      });
-      // Note: In Firebase, generating an actual authentication account requires either calling 
-      // createUserWithEmailAndPassword (which signs the admin out) or using a Firebase Admin SDK
-      // backend Cloud Function. The profile is saved to Firestore, but the Auth account must be handled separately.
-      Swal.fire({ title: 'Added!', text: 'New user has been successfully created.', icon: 'success', timer: 1500, showConfirmButton: false });
+    
+    try {
+      if (id) {
+        await this.userService.update(id, { ...v });
+        // NOTE: Role migration editing is skipped for simplicity. Recreate users to change roles.
+        Swal.fire({ title: 'Updated!', text: 'User details have been successfully updated.', icon: 'success', timer: 1500, showConfirmButton: false });
+      } else {
+        const userid = `u-${Date.now()}`;
+        await this.userService.add({
+          userid,
+          Fname: v.Fname,
+          Minitial: v.Minitial ?? '',
+          Lname: v.Lname,
+          email: v.email,
+          phone: v.phone ?? '',
+          status: v.status,
+          role: v.role,
+        });
+
+        // Push foreign keys into role tables so system actions function normally
+        if (v.role === 'Student') await this.roleService.addStudent({ studentid: userid, userid, yearLevel: 1 });
+        else if (v.role === 'Teacher') await this.roleService.addTeacher({ teacherid: userid, userid, department: 'General' });
+        else if (v.role === 'Librarian') await this.roleService.addLibrarian({ librarianid: userid, userid });
+        else if (v.role === 'Admin') await this.roleService.addAdmin({ adminid: userid, userid });
+
+        Swal.fire({ title: 'Added!', text: 'New user has been successfully created.', icon: 'success', timer: 1500, showConfirmButton: false });
+      }
+      this.cancelForm();
+    } catch (error: any) {
+      console.error(error);
+      Swal.fire({ title: 'Error', text: 'Operation failed: ' + error.message, icon: 'error' });
     }
-    this.cancelForm();
   }
 
   delete(userid: string): void {

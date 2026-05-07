@@ -21,9 +21,13 @@ export class CatalogComponent {
     return q ? this.bookService.search(q) : this.bookService.getAll();
   });
 
-  studentId = computed(() => {
+  userIdForBorrow = computed(() => {
     const session = this.auth.currentSession();
-    return session ? this.roleService.getStudentByUserId(session.userid)?.studentid : null;
+    if (!session) return null;
+    if (session.role === 'Teacher') {
+      return this.roleService.getTeacherByUserId(session.userid)?.teacherid;
+    }
+    return this.roleService.getStudentByUserId(session.userid)?.studentid;
   });
 
   message = signal('');
@@ -40,9 +44,9 @@ export class CatalogComponent {
   }
 
   async borrow(bookId: string): Promise<void> {
-    const sid = this.studentId();
+    const sid = this.userIdForBorrow();
     if (!sid) {
-      this.message.set('Not logged in as student.');
+      this.message.set('Not logged in with a valid borrowing role or missing profile.');
       return;
     }
     const result = await this.borrowService.borrow(bookId, sid);

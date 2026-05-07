@@ -15,7 +15,7 @@ import { NotificationService } from './notification.service';
 import type { BorrowRecord } from '../models';
 
 const BORROW_DAYS = 14;
-const FINE_PER_DAY = 10;
+const FINE_PER_DAY = 20;
 
 /**
  * Borrow and return transactions backed by Firestore `borrow_records` collection.
