@@ -67,7 +67,21 @@ export class BookManagementComponent {
     const v = this.form.getRawValue();
     const id = this.editingId();
     if (id) {
-      this.bookService.update(id, { booktitle: v.booktitle, author: v.author, isbn: v.isbn, category: v.category, totalCopies: v.totalCopies });
+      const currentBook = this.books().find(b => b.bookid === id);
+      if (currentBook) {
+        const diff = v.totalCopies - currentBook.totalCopies;
+        const newAvailable = Math.max(0, currentBook.availableCopies + diff);
+        
+        this.bookService.update(id, { 
+          booktitle: v.booktitle, 
+          author: v.author, 
+          isbn: v.isbn, 
+          category: v.category, 
+          totalCopies: v.totalCopies,
+          availableCopies: newAvailable,
+          status: newAvailable > 0 ? 'Available' : (newAvailable === 0 ? 'Borrowed Out' : currentBook.status)
+        });
+      }
       Swal.fire({ title: 'Updated!', text: 'Book details have been successfully updated.', icon: 'success', timer: 1500, showConfirmButton: false });
     } else {
       const bookid = `b-${Date.now()}`;

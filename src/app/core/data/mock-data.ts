@@ -37,8 +37,8 @@ export const MOCK_TEACHERS: Teacher[] = [{ teacherid: 't1', userid: 'u4', depart
 export const MOCK_BOOKS: Book[] = [
   { bookid: 'b1', booktitle: 'Introduction to Algorithms', author: 'Cormen et al.', isbn: '978-0262046305', category: 'Computer Science', availableCopies: 3, totalCopies: 5, status: 'Available' },
   { bookid: 'b2', booktitle: 'Clean Code', author: 'Robert Martin', isbn: '978-0132350884', category: 'Programming', availableCopies: 2, totalCopies: 4, status: 'Available' },
-  { bookid: 'b3', booktitle: 'The Philippine History', author: 'Teodoro Agoncillo', isbn: '978-9718711064', category: 'History', availableCopies: 5, totalCopies: 5, status: 'Available' },
-  { bookid: 'b4', booktitle: 'Noli Me Tangere', author: 'Jose Rizal', isbn: '978-0143039693', category: 'Literature', availableCopies: 4, totalCopies: 6, status: 'Available' },
+  { bookid: 'b3', booktitle: 'The Philippine History', author: 'Teodoro Agoncillo', isbn: '978-9718711064', category: 'History', availableCopies: 4, totalCopies: 5, status: 'Available' },
+  { bookid: 'b4', booktitle: 'Noli Me Tangere', author: 'Jose Rizal', isbn: '978-0143039693', category: 'Literature', availableCopies: 3, totalCopies: 6, status: 'Available' },
   { bookid: 'b5', booktitle: 'Calculus: Early Transcendentals', author: 'James Stewart', isbn: '978-1337613927', category: 'Mathematics', availableCopies: 2, totalCopies: 3, status: 'Available' },
 ];
 
@@ -47,12 +47,16 @@ export const MOCK_BORROW_RECORDS: BorrowRecord[] = [
   { borrowid: 'br1', bookid: 'b1', studentid: 's1', booktitle: 'Introduction to Algorithms', borrowdate: '2025-02-01', duedate: '2025-02-15', returndate: null, status: 'Borrowed' },
   { borrowid: 'br2', bookid: 'b2', studentid: 's1', booktitle: 'Clean Code', borrowdate: '2025-01-20', duedate: '2025-02-03', returndate: '2025-02-10', status: 'Returned' },
   { borrowid: 'br3', bookid: 'b4', studentid: 's2', booktitle: 'Noli Me Tangere', borrowdate: '2025-02-05', duedate: '2025-02-19', returndate: null, status: 'Borrowed' },
+  { borrowid: 'br4', bookid: 'b3', studentid: 's1', booktitle: 'The Philippine History', borrowdate: '2026-04-20', duedate: '2026-05-06', returndate: null, status: 'Borrowed' },
+  { borrowid: 'br5', bookid: 'b4', studentid: 's1', booktitle: 'Noli Me Tangere', borrowdate: '2026-04-15', duedate: '2026-05-01', returndate: null, status: 'Borrowed' },
 ];
 
 /** Mock fines */
 export const MOCK_FINES: Fine[] = [
   { fineid: 'f1', studentid: 's1', borrowid: 'br2', fineamount: 140, paymentstatus: 'Paid', daysOverdue: 7, paymentdate: '2025-02-11' },
   { fineid: 'f2', studentid: 's1', borrowid: 'br1', fineamount: 280, paymentstatus: 'Unpaid', daysOverdue: 14, paymentdate: null },
+  { fineid: 'f3', studentid: 's1', borrowid: 'br4', fineamount: 180, paymentstatus: 'Unpaid', daysOverdue: 9, paymentdate: null },
+  { fineid: 'f4', studentid: 's1', borrowid: 'br5', fineamount: 280, paymentstatus: 'Unpaid', daysOverdue: 14, paymentdate: null },
 ];
 
 /** Mock notifications */

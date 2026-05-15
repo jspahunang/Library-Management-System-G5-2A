@@ -98,6 +98,23 @@ export class UserManagementComponent {
         // NOTE: Role migration editing is skipped for simplicity. Recreate users to change roles.
         Swal.fire({ title: 'Updated!', text: 'User details have been successfully updated.', icon: 'success', timer: 1500, showConfirmButton: false });
       } else {
+        // Duplicate name check: same Fname + Minitial + Lname (case-insensitive)
+        const duplicate = this.users().find((u) =>
+          u.Fname.trim().toLowerCase() === v.Fname.trim().toLowerCase() &&
+          (u.Minitial ?? '').trim().toLowerCase() === (v.Minitial ?? '').trim().toLowerCase() &&
+          u.Lname.trim().toLowerCase() === v.Lname.trim().toLowerCase()
+        );
+        if (duplicate) {
+          Swal.fire({
+            title: 'User Already Exists',
+            text: `A user named "${v.Fname} ${v.Minitial ? v.Minitial + '. ' : ''}${v.Lname}" already exists in the system.`,
+            icon: 'warning',
+            confirmButtonColor: '#4f46e5',
+            confirmButtonText: 'OK'
+          });
+          return;
+        }
+
         const userid = `u-${Date.now()}`;
         await this.userService.add({
           userid,

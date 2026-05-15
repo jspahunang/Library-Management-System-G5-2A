@@ -44,6 +44,16 @@ export class NotificationService {
     return this.getByStudent(studentid).filter((n) => !n.read).length;
   }
 
+  getByTeacher(teacherid: string): Notification[] {
+    return this._notifications()
+      .filter((n) => n.teacherid === teacherid)
+      .sort((a, b) => (b.timestamp > a.timestamp ? 1 : -1));
+  }
+
+  getUnreadCountForTeacher(teacherid: string): number {
+    return this.getByTeacher(teacherid).filter((n) => !n.read).length;
+  }
+
   async add(notification: Omit<Notification, 'notificationid' | 'read'>): Promise<void> {
     const id = `notif-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
     const n: Notification = { ...notification, notificationid: id, read: false };
@@ -65,6 +75,17 @@ export class NotificationService {
     // Optimistically update the UI
     this._notifications.update(list =>
       list.map(n => n.studentid === studentid ? { ...n, read: true } : n)
+    );
+    await Promise.all(
+      unread.map((n) => updateDoc(doc(this.firestore, 'notifications', n.notificationid), { read: true }))
+    );
+  }
+
+  async markAllAsReadForTeacher(teacherid: string): Promise<void> {
+    const unread = this.getByTeacher(teacherid).filter((n) => !n.read);
+    // Optimistically update the UI
+    this._notifications.update(list =>
+      list.map(n => n.teacherid === teacherid ? { ...n, read: true } : n)
     );
     await Promise.all(
       unread.map((n) => updateDoc(doc(this.firestore, 'notifications', n.notificationid), { read: true }))

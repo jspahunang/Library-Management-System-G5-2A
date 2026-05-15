@@ -32,12 +32,6 @@ export class SeedService {
       const docRef = doc(this.firestore, 'users', MOCK_USERS[0].userid);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
-        // Force update mock fines for this specific request to ensure DB is in sync with recent changes
-        const tasks: Promise<void>[] = [];
-        for (const f of MOCK_FINES) {
-          tasks.push(setDoc(doc(this.firestore, 'fines', f.fineid), f));
-        }
-        await Promise.all(tasks);
         return; // Already seeded
       }
 

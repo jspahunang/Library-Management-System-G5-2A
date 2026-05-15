@@ -34,3 +34,19 @@
   width: 100%;
   padding-left: 2.5rem;
 }
+
+.out-of-stock-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #b91c1c;
+  background: rgba(185, 28, 28, 0.1);
+  border: 1px solid rgba(185, 28, 28, 0.25);
+  border-radius: 0.5rem;
+  letter-spacing: 0.025em;
+  user-select: none;
+}

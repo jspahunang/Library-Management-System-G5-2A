@@ -32,8 +32,8 @@ export class LibrarianFinesComponent {
     private roleService: RoleService
   ) { }
 
-  markPaid(fineid: string): void {
-    Swal.fire({
+  async markPaid(fineid: string): Promise<void> {
+    const result = await Swal.fire({
       title: 'Settle Fine?',
       text: "Mark this fine as paid?",
       icon: 'question',
@@ -41,12 +41,17 @@ export class LibrarianFinesComponent {
       confirmButtonColor: '#4f46e5',
       cancelButtonColor: '#d33',
       confirmButtonText: 'Yes, settle it'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.fineService.markAsPaid(fineid);
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await this.fineService.markAsPaid(fineid);
         this.message.set('Fine marked as paid.');
         Swal.fire({ title: 'Settled!', text: 'Fine has been marked as paid.', icon: 'success', timer: 1500, showConfirmButton: false });
+      } catch (error: any) {
+        console.error(error);
+        Swal.fire({ title: 'Error', text: 'Failed to update fine: ' + error.message, icon: 'error' });
       }
-    });
+    }
   }
 }

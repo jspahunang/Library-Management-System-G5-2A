@@ -32,6 +32,10 @@
       <div class="book-card-actions mt-4">
         <p-button (click)="borrow(book.bookid)" label="Borrow" styleClass="w-full"></p-button>
       </div>
+      } @else if (book.availableCopies === 0) {
+      <div class="book-card-actions mt-4">
+        <span class="out-of-stock-badge">Out of Stock</span>
+      </div>
       }
     </div>
     } @empty {
